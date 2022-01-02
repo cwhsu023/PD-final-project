@@ -36,6 +36,15 @@ int main()
     sf::Sprite sprite2;
     sprite2.setTexture(texture2);
 
+    sf::Texture texture3;
+    if(!texture3.loadFromFile("topview_car.png"))
+    {
+        return 1;
+    }
+    sf::Sprite sprite3;
+    sprite3.setTexture(texture3);
+    
+
     sf::Vector2f mp;
     mp.x = sf::Mouse::getPosition(window).x;
     mp.y = sf::Mouse::getPosition(window).y;
@@ -55,16 +64,48 @@ int main()
                     {
                         if(event.type == sf::Event::MouseButtonReleased &&  event.mouseButton.button == sf::Mouse::Left)
                         {
-                                window.create(sf::VideoMode(1800, 1600),"Game!");
-                                while(window.isOpen())
+                                window2.create(sf::VideoMode(1800, 1600),"Game!");
+                                int sprite3x = 50, sprite3y = 300;
+                                sprite3.setPosition(sf::Vector2f(sprite3x, sprite3y));
+                                while(window2.isOpen())
                                 {
                                     sf::Event event;
-                                    
-                                    while(window.pollEvent(event))
+
+                                    while(window2.pollEvent(event))
                                     {
                                         if(event.type == sf::Event::Closed)
-                                            window.close(); 
+                                            window2.close(); 
+                                        if(sf::Event::KeyPressed)
+                                        {
+                                            switch(event.key.code)
+                                            {
+                                                case sf::Keyboard::Right:
+                                                {
+                                                    sprite3.move(20,0);
+                                                    break;
+                                                }
+                                                case sf::Keyboard::Left:
+                                                {
+                                                    sprite3.move(-20,0);
+                                                    break;
+                                                }
+                                                case sf::Keyboard::Up:
+                                                {
+                                                    sprite3.move(0,-20);
+                                                    break;
+                                                }
+                                                case sf::Keyboard::Down:
+                                                {
+                                                    sprite3.move(0,20);
+                                                    break;
+                                                }
+                                            }
+                                        }
                                     }
+                                    
+                                    window2.clear(sf::Color::Black);
+                                    window2.draw(sprite3);
+                                    window2.display();
                                 }
                         }
                     }
