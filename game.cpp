@@ -20,21 +20,21 @@ public:
 };
 Game::Game()
 {
-    this->k = 1;
+    this->k = 49;
     this->window.create(sf::VideoMode(3000, 2500),"Game!!!");
     openWindow();
 }
 void Game::openWindow()
 {
-    t1.loadFromFile("background.png");
+    t1.loadFromFile("Backgroundnew.jpg");
     s1.setTexture(t1);
     t1PosX = 0;
     s1.setPosition(sf::Vector2f(t1PosX, 300));
-    t3.loadFromFile("background.png");
+    t3.loadFromFile("Backgroundnew.jpg");
     s3.setTexture(t3);
     t3PosX = t3.getSize().x;
     s3.setPosition(sf::Vector2f(t3PosX,400));
-    std::string fileName = "bike" + std::to_string(k) + ".png";
+    std::string fileName = "Newbike" + std::to_string(k/10) + ".png";
     t2.loadFromFile(fileName);
     s2.setTexture(t2);
     s2.setPosition(sf::Vector2f(100,400));
@@ -89,14 +89,13 @@ void Game::refresh()
     s1.setPosition(sf::Vector2f(t1PosX, 300));
     s3.setPosition(sf::Vector2f(t3PosX, 300));
     this->window.draw(this->s1);
-    // std::string fileName = "bike" + std::to_string(k) + ".png";
-    // t2.loadFromFile(fileName);
-    // s2.setTexture(t2);
-    // s2.setPosition(sf::Vector2f(100,400));
+    std::string fileName = "Newbike" + std::to_string(k/10) + ".png";
+    t2.loadFromFile(fileName);
+    s2.setTexture(t2);
     this->window.draw(this->s3);
     this->window.draw(this->s2);
     this->window.display();
-    // k == 4 ? k = 1 : k++;
+    k == 10 ? k = 49 : k--;
     t1PosX == -(t1.getSize().x) ? t1PosX = t1.getSize().x : t1PosX--;
     t3PosX == -(t3.getSize().x) ? t3PosX = t3.getSize().x : t3PosX--;
 
