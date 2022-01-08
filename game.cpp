@@ -5,6 +5,16 @@
 #include <string>
 #include <time.h>
 
+class Player
+{
+public:
+    friend class Game;
+    Player();
+};
+Player::Player()
+{
+
+}
 class Game
 {
 public:
@@ -21,19 +31,20 @@ public:
 Game::Game()
 {
     this->k = 49;
-    this->window.create(sf::VideoMode(3000, 2500),"Game!!!");
+    this->window.create(sf::VideoMode(3000, 1200),"Game!!!");
     openWindow();
 }
 void Game::openWindow()
 {
-    t1.loadFromFile("Backgroundnew.jpg");
+    t1.loadFromFile("NEWroad.png");
     s1.setTexture(t1);
     t1PosX = 0;
-    s1.setPosition(sf::Vector2f(t1PosX, 300));
-    t3.loadFromFile("Backgroundnew.jpg");
+    s1.setPosition(sf::Vector2f(t1PosX, 0));
+    t3.loadFromFile("NEWroad.png");
     s3.setTexture(t3);
     t3PosX = t3.getSize().x;
-    s3.setPosition(sf::Vector2f(t3PosX,400));
+    s3.setPosition(sf::Vector2f(t3PosX,0));
+    Player player;
     std::string fileName = "Newbike" + std::to_string(k/10) + ".png";
     t2.loadFromFile(fileName);
     s2.setTexture(t2);
@@ -45,6 +56,7 @@ void Game::openWindow()
     os1.setPosition(sf::Vector2f(700, 700));
     std::cout << ot1.getSize().x << std::endl;
     std::cout << ot1.getSize().y << std::endl;
+    std::cout << t1.getSize().x << "," << t1.getSize().y << std::endl;
 
     
     startTime = time(0);
@@ -94,14 +106,14 @@ void Game::openWindow()
 void Game::refresh()
 {
     this->window.clear(sf::Color::Black);
-    s1.setPosition(sf::Vector2f(t1PosX, 300));
-    s3.setPosition(sf::Vector2f(t3PosX, 300));
+    s1.setPosition(sf::Vector2f(t1PosX, 0));
+    s3.setPosition(sf::Vector2f(t3PosX, 0));
     this->window.draw(this->s1);
     std::string fileName = "Newbike" + std::to_string(k/10) + ".png";
     t2.loadFromFile(fileName);
     s2.setTexture(t2);
     this->window.draw(this->s3);
-    this->window.draw(this->s2);
+    this->window.draw(s2);
     this->window.draw(this->os1);
     this->window.display();
     k == 10 ? k = 49 : k--;
