@@ -10,8 +10,8 @@ class Game
 public:
     int k;
     sf::RenderWindow window;
-    sf::Texture t1, t2, t3;
-    sf::Sprite s1, s2, s3;
+    sf::Texture t1, t2, t3, ot1;
+    sf::Sprite s1, s2, s3, os1;
     int t1PosX, t3PosX;
     time_t startTime, endTime;
     Game();
@@ -38,6 +38,14 @@ void Game::openWindow()
     t2.loadFromFile(fileName);
     s2.setTexture(t2);
     s2.setPosition(sf::Vector2f(100,400));
+    // ot1.loadFromFile("dove.png", sf::IntRect(1285,460,2285,1200));
+    ot1.loadFromFile("dove.png");
+    os1.setTexture(ot1);
+    os1.setScale(sf::Vector2f(0.3f, 0.3f));
+    os1.setPosition(sf::Vector2f(700, 700));
+    std::cout << ot1.getSize().x << std::endl;
+    std::cout << ot1.getSize().y << std::endl;
+
     
     startTime = time(0);
     while(window.isOpen())
@@ -94,6 +102,7 @@ void Game::refresh()
     s2.setTexture(t2);
     this->window.draw(this->s3);
     this->window.draw(this->s2);
+    this->window.draw(this->os1);
     this->window.display();
     k == 10 ? k = 49 : k--;
     t1PosX == -(t1.getSize().x) ? t1PosX = t1.getSize().x : t1PosX--;
