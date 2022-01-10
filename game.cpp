@@ -19,7 +19,7 @@ public:
     int t1PosX, t3PosX, dovePos;
     time_t startTime, endTime;
     Game();
-    void refresh(Player &player);
+    void refresh(Player &player ,int bikeAnimateControl);
     void openWindow(); 
     void collision(Player &player);
     void setCircle(int x, int y);
@@ -33,18 +33,19 @@ Game::Game()
 }
 void Game::openWindow()
 {
-    t1.loadFromFile("NEWroad.png");
+    //setting backgound
+    t1.loadFromFile("resources/NEWroad.png");
     s1.setTexture(t1);
     t1PosX = 0;
     s1.setPosition(sf::Vector2f(t1PosX, 0));
-    t3.loadFromFile("NEWroad.png");
+    t3.loadFromFile("resources/NEWroad.png");
     s3.setTexture(t3);
     t3PosX = t3.getSize().x;
     s3.setPosition(sf::Vector2f(t3PosX,0));
-    
 
+    //setting bike 
     Player player;
-    std::string fileName = "Newbike" + std::to_string(k/10) + ".png";
+    std::string fileName = "resources/Newbike" + std::to_string(k/10) + ".png";
     player.t2.loadFromFile(fileName, sf::IntRect(30,370,450,740));
     player.s2.setTexture(player.t2);
     player.s2.setPosition(sf::Vector2f(100,275));
@@ -54,7 +55,8 @@ void Game::openWindow()
     // player.rectangle.setOutlineThickness(5);
     player.rectangle.setPosition(100, 600);
 
-    ot1.loadFromFile("dove.png", sf::IntRect(1300,460,980, 750));
+    //setting dove
+    ot1.loadFromFile("resources/dove.png", sf::IntRect(1300,460,980, 750));
     // ot1.loadFromFile("dove.png");
     os1.setTexture(ot1);
     os1.setScale(sf::Vector2f(0.15f, 0.15f));
@@ -66,11 +68,30 @@ void Game::openWindow()
     // std::cout << os1.getPosition().x << std::endl;
     // std::cout << os1.getGlobalBounds().width << std::endl;
 
+    // background moving setting 
+    t1.setRepeated(true);
+    sf::Shader parallaxShader;
+    parallaxShader.loadFromMemory(
+        "uniform float offset;"
+
+        "void main() {"
+        "    gl_Position = gl_ProjectionMatrix * gl_ModelViewMatrix * gl_Vertex;"
+        "    gl_TexCoord[0] = gl_TextureMatrix[0] * gl_MultiTexCoord0;"
+        "    gl_TexCoord[0].x = gl_TexCoord[0].x + offset;" // magic
+        "    gl_FrontColor = gl_Color;"
+        "}"
+        , sf::Shader::Vertex);
+    float offset = 0.f;
+    sf::Clock clock ;
+    
+
+    //bike moving setting
     float dt;
     sf::Clock dt_clock;
 
-    
     sf::Clock timer;
+
+    int bikeAnimateControl =1 ;
     while(window.isOpen())
     {
         dt = dt_clock.restart().asMilliseconds();
@@ -118,27 +139,37 @@ void Game::openWindow()
                 player.rectangle.move(player.velocity);
             }
         }
-        collision(player);
-        refresh(player);
+        //first bakgound , second bike , third dove or others ! display~
+        //background drawing
+        window.clear();
+        parallaxShader.setUniform("offset", offset += clock.restart().asSeconds() / 10);
+        window.draw(s1, &parallaxShader);
+        
+
+        refresh(player ,bikeAnimateControl) ;
+        bikeAnimateControl++ ;
+        if(bikeAnimateControl>4)
+        {
+            bikeAnimateControl=1;
+        }
+        window.display();
     }
 }
-void Game::refresh(Player &player)
+//refresh  = bike animation 
+void Game::refresh(Player &player, int bikeAnimateControl)
 {
-    this->window.clear(sf::Color::Black);
-    s1.setPosition(sf::Vector2f(t1PosX, 0));
-    s3.setPosition(sf::Vector2f(t3PosX, 0));
+    //dove ; but this should be in another part !
     os1.setPosition(sf::Vector2f(dovePos, 700));
     for(auto &obs : obstacles)
     {
         obs.setPosition(sf::Vector2f(dovePos, 720));
     }
-    std::string fileName = "Newbike" + std::to_string(k/10) + ".png";
+    // bike animation 
+    std::string fileName = "resources/Newbike" + std::to_string(bikeAnimateControl) + ".png";
     player.t2.loadFromFile(fileName, sf::IntRect(30,370,450,740));
     player.s2.setTexture(player.t2);
     player.checkPosition();
     player.rectPosition();
-    this->window.draw(this->s1);
-    this->window.draw(this->s3);
     this->window.draw(player.s2);
     this->window.draw(this->os1);
     for(auto &obs : obstacles)
@@ -146,11 +177,6 @@ void Game::refresh(Player &player)
         this->window.draw(obs);
     }
     this->window.draw(player.rectangle);
-    this->window.display();
-    k == 10 ? k = 49 : k--;
-    s1.getGlobalBounds().left == -(t1.getSize().x) ? t1PosX = t1.getSize().x : t1PosX--;
-    s3.getGlobalBounds().left == -(t3.getSize().x) ? t3PosX = t3.getSize().x : t3PosX--;
-    dovePos--;
 }
 void Game::collision(Player &player)
 {
