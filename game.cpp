@@ -15,13 +15,14 @@ public:
     int k;
     bool inLibrary;
     sf::RenderWindow window;
-    sf::Texture t1, t3, gOverT;
-    sf::Sprite s1, s3, gOverS;
+    sf::Texture t1, t3, gOverT, t_heart1, t_heart2, t_heart3;
+    sf::Sprite s1, s3, gOverS, s_heart1, s_heart2, s_heart3;
     int t1PosX, t3PosX, dovePos;
     time_t startTime, endTime;
     Game();
     void refresh(Player &player ,int bikeAnimateControl, float currentSpeed);
     void openWindow();
+    void heart(int playerLife);
 };
 Game::Game()
 {
@@ -30,6 +31,41 @@ Game::Game()
     this->inLibrary = false;
     this->window.create(sf::VideoMode(3000, 1200),"Game!!!");
     openWindow();
+}
+void Game::heart(int playerLife)
+{
+    std::string fileName = "resources/valentinesday_heart.png" ;
+    this -> t_heart1.loadFromFile(fileName);
+    this -> s_heart1.setTexture(this -> t_heart1);
+    this -> t_heart2.loadFromFile(fileName);
+    this -> s_heart2.setTexture(this -> t_heart2);
+    this -> t_heart3.loadFromFile(fileName);
+    this -> s_heart3.setTexture(this -> t_heart3);
+    this -> s_heart1.setScale(sf::Vector2f(0.3f, 0.3f));
+    this -> s_heart2.setScale(sf::Vector2f(0.3f, 0.3f));
+    this -> s_heart3.setScale(sf::Vector2f(0.3f, 0.3f));
+
+    if(playerLife == 3)
+    {
+        s_heart1.setPosition(sf::Vector2f(100,20)) ;
+        s_heart2.setPosition(sf::Vector2f(250,20)) ;
+        s_heart3.setPosition(sf::Vector2f(400,20)) ;
+        this -> window.draw(this -> s_heart1) ;
+        this -> window.draw(this -> s_heart2) ;
+        this -> window.draw(this -> s_heart3) ;
+    }
+    if(playerLife == 2)
+    {
+        s_heart1.setPosition(sf::Vector2f(100,20)) ;
+        s_heart2.setPosition(sf::Vector2f(250,20)) ;
+        this -> window.draw(this -> s_heart1) ;
+        this -> window.draw(this -> s_heart2) ;
+    }
+    if(playerLife == 1)
+    {
+        s_heart1.setPosition(sf::Vector2f(100,20)) ;
+        this -> window.draw(this -> s_heart1) ;
+    }
 }
 void Game::openWindow()
 {
@@ -44,8 +80,8 @@ void Game::openWindow()
     std::string fileName = "resources/Newbike" + std::to_string(k/10) + ".png";
     player.t2.loadFromFile(fileName, sf::IntRect(30,370,450,740));
     player.s2.setTexture(player.t2);
-    player.s2.setPosition(sf::Vector2f(100,275));
-    player.rectangle.setSize(sf::Vector2f(450, 50));
+    player.s2.setPosition(sf::Vector2f(200,275));
+    player.rectangle.setSize(sf::Vector2f(550, 50));
     player.rectangle.setFillColor(sf::Color::Transparent);
     player.rectangle.setOutlineColor(sf::Color::Red);
     player.rectangle.setOutlineThickness(5);
@@ -139,7 +175,9 @@ void Game::openWindow()
             bool hit = false;
             hit = allObstacle[i].collision(player);
             if(hit)
+            {
                 allObstacle.erase(allObstacle.begin()+i);
+            }
         }
         
 
@@ -159,6 +197,7 @@ void Game::openWindow()
             {
                 bikeAnimateControl = 1;
             }
+            heart(player.life);
             window.display();
         }
         else
@@ -180,6 +219,7 @@ void Game::openWindow()
                 {
                     bikeAnimateControl = 1;
                 }
+                heart(player.life);
                 window.display();
                 dt = dt_clock.restart().asMilliseconds();
             }
