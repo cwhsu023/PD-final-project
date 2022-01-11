@@ -11,7 +11,7 @@ std::vector<Obstacles> allObstacle;
 class Game
 {
 public:
-    int c;
+    int c, totalDist;
     bool inLibrary;
     sf::RenderWindow window;
     sf::Texture t1, gOverT, t_heart1, t_heart2, t_heart3;
@@ -25,6 +25,7 @@ public:
 };
 Game::Game()
 {
+    this->totalDist = 1;  // how many pic to ride
     this->c = 0;
     this->inLibrary = false;
     this->window.create(sf::VideoMode(3000, 1200),"Game!!!");
@@ -179,7 +180,10 @@ void Game::openWindow()
             window.clear();
             float speedControler = bike.bikeSpeed() ;
             float currentSpeed = clock.restart().asSeconds() * speedControler;
-            parallaxShader.setUniform("offset", offset += currentSpeed);
+            offset += currentSpeed;
+            if(inLibrary && (offset - totalDist) * this->s1.getGlobalBounds().width > this->s1.getGlobalBounds().width - 3000)
+                offset = totalDist + (static_cast<float>(this->s1.getGlobalBounds().width - 3000) / this->s1.getGlobalBounds().width);
+            parallaxShader.setUniform("offset", offset = offset);
             window.draw(s1, &parallaxShader);
             refresh(player, bikeAnimateControl, currentSpeed);
             bikeAnimateControl-- ;
@@ -201,7 +205,10 @@ void Game::openWindow()
                 window.clear();
                 float speedControler = bike.bikeSpeed() ;
                 float currentSpeed = clock.restart().asSeconds() * speedControler;
-                parallaxShader.setUniform("offset", offset += currentSpeed);
+                offset += currentSpeed;
+                if(inLibrary && (offset - totalDist) * this->s1.getGlobalBounds().width > this->s1.getGlobalBounds().width - 3000)
+                    offset = totalDist + (static_cast<float>(this->s1.getGlobalBounds().width - 3000) / this->s1.getGlobalBounds().width);
+                parallaxShader.setUniform("offset", offset = offset);
                 window.draw(s1, &parallaxShader);
                 refresh(player, bikeAnimateControl, currentSpeed);
                 bikeAnimateControl-- ;
@@ -226,8 +233,9 @@ void Game::openWindow()
             allObstacle.erase(allObstacle.begin(), allObstacle.begin()+allObstacle.size());
             // window.close();
         }
-        if(offset > 1 && !inLibrary )
+        if(offset > totalDist && !inLibrary )
         {
+            // ending pic
             t1.loadFromFile("resources/library.png");
             s1.setTexture(t1);
             inLibrary = true;
