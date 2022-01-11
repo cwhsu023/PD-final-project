@@ -15,29 +15,30 @@
 //     return false;
 // }
 
-class Instruct
+class Ranking
 {
 public:
     sf::RenderWindow window;
-    // sf::Texture t1, t2;
-    // sf::Sprite s1, s2;
+    sf::Texture t1;  // 需要新的圖片在這邊增加texture, sprite
+    sf::Sprite s1;
     sf::Vector2f mp;
-    Instruct();
+    Ranking();
     void refresh();
     void openWindow(); 
 };
-Instruct::Instruct()
+Ranking::Ranking()
 {
-    this->window.create(sf::VideoMode(1000, 600),"How to play?");
+    this->window.create(sf::VideoMode(1000, 600),"Ranking!!!");  // 視窗大小
     openWindow();
 }
-void Instruct::openWindow()
+void Ranking::openWindow()
 {
-    mp.x = sf::Mouse::getPosition(this->window).x;
-    mp.y = sf::Mouse::getPosition(this->window).y;
-    // t1.loadFromFile("resources/button1.png");
-    // s1.setTexture(t1);
-    // s1.setPosition(sf::Vector2f(500, 500));
+    // 如果要偵測滑鼠開這兩行
+    // mp.x = sf::Mouse::getPosition(this->window).x;
+    // mp.y = sf::Mouse::getPosition(this->window).y;
+    t1.loadFromFile("resources/button1.png");  // 插入圖片
+    s1.setTexture(t1);
+    s1.setPosition(sf::Vector2f(500, 500));  // 圖片位置
     while(window.isOpen())
     {
         sf::Event event;
@@ -49,19 +50,16 @@ void Instruct::openWindow()
             //     {
             //         if(event.type == sf::Event::MouseButtonReleased &&  event.mouseButton.button == sf::Mouse::Left)
             //         {
-            //             // window.close();
-            //             // Game game;
-            //             // if(!game.window.isOpen())
-            //             //     Login login;
+            //               // 點選後的指令
             //         }
             //     }
         }
         refresh();
     }
 }
-void Instruct::refresh()
+void Ranking::refresh()
 {
     this->window.clear(sf::Color::Black);
-    // this->window.draw(s1);
+    this->window.draw(s1);  // 顯示圖片
     this->window.display();
 }
