@@ -107,7 +107,8 @@ void Game::openWindow()
                     case sf::Keyboard::Right:
                     {
                         // player.velocity.x += player.moveSpeed * dt;
-                        bike.bikeAccelerating() ;
+                        // bike.bikeAccelerating() ;
+                        bike.testbikeAccelerating();
                         break;
                     }
                     case sf::Keyboard::Left:
