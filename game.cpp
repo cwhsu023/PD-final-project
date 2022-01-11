@@ -6,6 +6,7 @@
 #include <time.h>
 #include "player.h"
 #include "obstacles.h"
+#include "bike.h"
 std::vector<Obstacles> allObstacle;
 class Game
 {
@@ -84,7 +85,8 @@ void Game::openWindow()
     //跑了幾圈while 
     int distane =0 ;
     //速度
-    float speedControler = 0.01 ;
+    // float speedControler = 0.01 ;
+    Bike bike;
     while(window.isOpen())
     {
         dt = dt_clock.restart().asMilliseconds();
@@ -107,17 +109,12 @@ void Game::openWindow()
                     case sf::Keyboard::Right:
                     {
                         // player.velocity.x += player.moveSpeed * dt;
-                        speedControler += 0.01 ;
-                        if(speedControler >= 0.11  )
-                            speedControler = 0.11 ;
+                        bike.bikeAccelerating() ;
                         break;
                     }
                     case sf::Keyboard::Left:
                     {
-                        // player.velocity.x += -player.moveSpeed * dt;
-                        speedControler -= 0.02 ;
-                        if(speedControler <= 0 )
-                            speedControler = 0.01 ;
+                        bike.bikeDecelerating();
                         break;
                     }
                     case sf::Keyboard::Up:
@@ -154,6 +151,7 @@ void Game::openWindow()
             //first bakgound , second bike , third dove or others ! display~
             //background drawing
             window.clear();
+            float speedControler = bike.bikeSpeed() ;
             parallaxShader.setUniform("offset", offset += clock.restart().asSeconds() * speedControler);
             window.draw(s1, &parallaxShader);
             refresh(player, bikeAnimateControl);
@@ -173,6 +171,7 @@ void Game::openWindow()
                 //first bakgound , second bike , third dove or others ! display~
                 //background drawing
                 window.clear();
+                float speedControler = bike.bikeSpeed() ;
                 parallaxShader.setUniform("offset", offset += clock.restart().asSeconds() * speedControler);
                 window.draw(s1, &parallaxShader);
                 refresh(player, bikeAnimateControl);
