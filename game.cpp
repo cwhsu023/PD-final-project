@@ -12,11 +12,10 @@ class Game
 {
 public:
     int c;
-    int k;
     bool inLibrary;
     sf::RenderWindow window;
-    sf::Texture t1, t3, gOverT, t_heart1, t_heart2, t_heart3;
-    sf::Sprite s1, s3, gOverS, s_heart1, s_heart2, s_heart3;
+    sf::Texture t1, gOverT, t_heart1, t_heart2, t_heart3;
+    sf::Sprite s1, gOverS, s_heart1, s_heart2, s_heart3;
     int t1PosX, t3PosX, dovePos;
     time_t startTime, endTime;
     Game();
@@ -27,7 +26,6 @@ public:
 Game::Game()
 {
     this->c = 0;
-    this->k = 49;
     this->inLibrary = false;
     this->window.create(sf::VideoMode(3000, 1200),"Game!!!");
     openWindow();
@@ -77,15 +75,7 @@ void Game::openWindow()
     
     //setting bike 
     Player player;
-    std::string fileName = "resources/Newbike" + std::to_string(k/10) + ".png";
-    player.t2.loadFromFile(fileName, sf::IntRect(30,370,450,740));
-    player.s2.setTexture(player.t2);
-    player.s2.setPosition(sf::Vector2f(200,275));
-    player.rectangle.setSize(sf::Vector2f(550, 50));
-    player.rectangle.setFillColor(sf::Color::Transparent);
-    player.rectangle.setOutlineColor(sf::Color::Red);
-    player.rectangle.setOutlineThickness(5);
-    player.rectangle.setPosition(100, 600);
+    
 
     // obstacles
     dovePos = 700;
@@ -115,7 +105,7 @@ void Game::openWindow()
 
     sf::Clock timer;
 
-    int bikeAnimateControl = 1 ;
+    int bikeAnimateControl = 4 ;
     //跑了幾圈while 
     int distane =0 ;
     //速度
@@ -192,10 +182,10 @@ void Game::openWindow()
             parallaxShader.setUniform("offset", offset += currentSpeed);
             window.draw(s1, &parallaxShader);
             refresh(player, bikeAnimateControl, currentSpeed);
-            bikeAnimateControl++ ;
-            if(bikeAnimateControl > 4)
+            bikeAnimateControl-- ;
+            if(bikeAnimateControl < 1)
             {
-                bikeAnimateControl = 1;
+                bikeAnimateControl = 4;
             }
             heart(player.life);
             window.display();
@@ -214,10 +204,10 @@ void Game::openWindow()
                 parallaxShader.setUniform("offset", offset += currentSpeed);
                 window.draw(s1, &parallaxShader);
                 refresh(player, bikeAnimateControl, currentSpeed);
-                bikeAnimateControl++ ;
-                if(bikeAnimateControl > 4)
+                bikeAnimateControl-- ;
+                if(bikeAnimateControl < 1)
                 {
-                    bikeAnimateControl = 1;
+                    bikeAnimateControl = 4;
                 }
                 heart(player.life);
                 window.display();
