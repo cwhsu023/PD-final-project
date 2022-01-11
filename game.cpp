@@ -13,6 +13,7 @@ class Game
 public:
     int c;
     int k;
+    bool inLibrary;
     sf::RenderWindow window;
     sf::Texture t1, t3, gOverT;
     sf::Sprite s1, s3, gOverS;
@@ -26,6 +27,7 @@ Game::Game()
 {
     this->c = 0;
     this->k = 49;
+    this->inLibrary = false;
     this->window.create(sf::VideoMode(3000, 1200),"Game!!!");
     openWindow();
 }
@@ -36,10 +38,6 @@ void Game::openWindow()
     s1.setTexture(t1);
     t1PosX = 0;
     s1.setPosition(sf::Vector2f(t1PosX, 0));
-    t3.loadFromFile("resources/NEWroad.png");
-    s3.setTexture(t3);
-    t3PosX = t3.getSize().x;
-    s3.setPosition(sf::Vector2f(t3PosX,0));
     
     //setting bike 
     Player player;
@@ -195,6 +193,11 @@ void Game::openWindow()
             std::cout << "Game over. You've survived for " << elapsed.asSeconds() << " seconds" << std::endl;
             allObstacle.erase(allObstacle.begin(), allObstacle.begin()+allObstacle.size());
             // window.close();
+        }
+        if(offset > 1 && !inLibrary)
+        {
+            t1.loadFromFile("resources/library.png");
+            s1.setTexture(t1);
         }
 
         
