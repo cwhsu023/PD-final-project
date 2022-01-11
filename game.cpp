@@ -141,7 +141,6 @@ void Game::openWindow()
             if(hit)
                 allObstacle.erase(allObstacle.begin()+i);
         }
-
         
 
         // refresh player
@@ -197,10 +196,11 @@ void Game::openWindow()
             allObstacle.erase(allObstacle.begin(), allObstacle.begin()+allObstacle.size());
             // window.close();
         }
-        if(offset > 1 && !inLibrary)
+        if(offset > 1 && !inLibrary )
         {
             t1.loadFromFile("resources/library.png");
             s1.setTexture(t1);
+            inLibrary = true;
         }
 
         
