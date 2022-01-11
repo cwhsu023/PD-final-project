@@ -29,7 +29,7 @@ public:
 Login::Login()
 {
     // this->playGame = false;
-    this->window.create(sf::VideoMode(3000, 2500),"Game!!!");
+    this->window.create(sf::VideoMode(3000, 1200),"Game!!!");
     openWindow();
 }
 void Login::openWindow()
