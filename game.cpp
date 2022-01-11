@@ -20,7 +20,7 @@ public:
     int t1PosX, t3PosX, dovePos;
     time_t startTime, endTime;
     Game();
-    void refresh(Player &player ,int bikeAnimateControl);
+    void refresh(Player &player ,int bikeAnimateControl, float currentSpeed);
     void openWindow();
 };
 Game::Game()
@@ -53,9 +53,9 @@ void Game::openWindow()
 
     // obstacles
     dovePos = 700;
-    Obstacles dove1(dovePos, 700, -2, 0);
+    Obstacles dove1(dovePos+1000, 700, -2, 0);
     allObstacle.push_back(dove1);
-    Obstacles dove2(dovePos+800, 950, -2, 0);
+    Obstacles dove2(dovePos+1800, 950, -2, 0);
     allObstacle.push_back(dove2);
 
     // background moving setting 
@@ -151,9 +151,10 @@ void Game::openWindow()
             //background drawing
             window.clear();
             float speedControler = bike.bikeSpeed() ;
-            parallaxShader.setUniform("offset", offset += clock.restart().asSeconds() * speedControler);
+            float currentSpeed = clock.restart().asSeconds() * speedControler;
+            parallaxShader.setUniform("offset", offset += currentSpeed);
             window.draw(s1, &parallaxShader);
-            refresh(player, bikeAnimateControl);
+            refresh(player, bikeAnimateControl, currentSpeed);
             bikeAnimateControl++ ;
             if(bikeAnimateControl > 4)
             {
@@ -171,9 +172,10 @@ void Game::openWindow()
                 //background drawing
                 window.clear();
                 float speedControler = bike.bikeSpeed() ;
-                parallaxShader.setUniform("offset", offset += clock.restart().asSeconds() * speedControler);
+                float currentSpeed = clock.restart().asSeconds() * speedControler;
+                parallaxShader.setUniform("offset", offset += currentSpeed);
                 window.draw(s1, &parallaxShader);
-                refresh(player, bikeAnimateControl);
+                refresh(player, bikeAnimateControl, currentSpeed);
                 bikeAnimateControl++ ;
                 if(bikeAnimateControl > 4)
                 {
@@ -204,7 +206,7 @@ void Game::openWindow()
         
     }
 }
-void Game::refresh(Player &player, int bikeAnimateControl)
+void Game::refresh(Player &player, int bikeAnimateControl, float currentSpeed)
 {
     // bike animation 
     std::string fileName = "resources/Newbike" + std::to_string(bikeAnimateControl) + ".png";
@@ -215,11 +217,12 @@ void Game::refresh(Player &player, int bikeAnimateControl)
     for(auto &obs : allObstacle)
     {
         // move obstacle
-        obs.move();
+        obs.move(currentSpeed * this->s1.getGlobalBounds().width);
     }
     for(auto &obs : allObstacle)
     {
         // obstacle behind bike draw first
+        // std::cout << bikeSpeed << std::endl;
         if(obs.obsSprite.getGlobalBounds().top > player.s2.getGlobalBounds().top)
         {
             this->window.draw(obs.obsSprite);

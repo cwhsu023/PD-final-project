@@ -8,7 +8,7 @@ public:
     Obstacles(int posX, int posY, int speedX, int speedY);
     void setCircle(int x, int y);
     bool collision(Player &player);
-    void move();
+    void move(float bikeSpeed);
 };
 Obstacles::Obstacles(int X, int Y, int speedX, int speedY):c(1)
 {
@@ -44,8 +44,10 @@ bool Obstacles::collision(Player &player)
     }
     return false;
 }
-void Obstacles::move()
+void Obstacles::move(float bikeSpeed)
 {
-    this->obsSprite.move(this->velocity);
-    this->circle.move(this->velocity);
+    sf::Vector2f speed;
+    speed.x = this->velocity.x - bikeSpeed;
+    this->obsSprite.move(speed);
+    this->circle.move(speed);
 }
