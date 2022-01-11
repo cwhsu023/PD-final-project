@@ -6,6 +6,7 @@
 #include <iostream>
 #include <string>
 
+// 如果需要用滑鼠點東西（希望不會爆掉哈哈哈）
 // bool isSpriteHover(sf::FloatRect sprite, sf::Vector2f mp) 
 // {
 //     if (sprite.contains(mp))
