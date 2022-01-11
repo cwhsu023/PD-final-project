@@ -4,6 +4,7 @@
 #include <iostream>
 #include <string>
 #include <time.h>
+#include <stdlib.h>
 #include "player.h"
 #include "obstacles.h"
 #include "bike.h"
@@ -22,10 +23,11 @@ public:
     void refresh(Player &player ,int bikeAnimateControl, float currentSpeed);
     void openWindow();
     void heart(int playerLife);
+    friend class Obstacles;
 };
 Game::Game()
 {
-    this->totalDist = 1;  // how many pic to ride
+    this->totalDist = 4;  // how many pic to ride
     this->c = 0;
     this->inLibrary = false;
     this->window.create(sf::VideoMode(3000, 1200),"Game!!!");
@@ -80,10 +82,10 @@ void Game::openWindow()
 
     // obstacles
     dovePos = 700;
-    Obstacles dove1(dovePos+1000, 700, -2, 0);
-    allObstacle.push_back(dove1);
-    Obstacles dove2(dovePos+1800, 950, -2, 0);
-    allObstacle.push_back(dove2);
+    srand(time(NULL));
+    // Obstacles dove1(500 + (rand() % 10000), 600 + (rand() % 600), -(rand() % 10) - 5, 0);
+    // allObstacle.push_back(dove1);
+
 
     // background moving setting 
     t1.setRepeated(true);
@@ -106,7 +108,7 @@ void Game::openWindow()
 
     sf::Clock timer;
 
-    int bikeAnimateControl = 4 ;
+    int bikeAnimateControl = 19 ;
     //跑了幾圈while 
     int distane =0 ;
     //速度
@@ -114,6 +116,7 @@ void Game::openWindow()
     Bike bike;
     while(window.isOpen())
     {
+        
         dt = dt_clock.restart().asMilliseconds();
         sf::Event event;
         while(window.pollEvent(event))
@@ -187,9 +190,9 @@ void Game::openWindow()
             window.draw(s1, &parallaxShader);
             refresh(player, bikeAnimateControl, currentSpeed);
             bikeAnimateControl-- ;
-            if(bikeAnimateControl < 1)
+            if(bikeAnimateControl < 4)
             {
-                bikeAnimateControl = 4;
+                bikeAnimateControl = 19;
             }
             heart(player.life);
             window.display();
@@ -212,9 +215,9 @@ void Game::openWindow()
                 window.draw(s1, &parallaxShader);
                 refresh(player, bikeAnimateControl, currentSpeed);
                 bikeAnimateControl-- ;
-                if(bikeAnimateControl < 1)
+                if(bikeAnimateControl < 4)
                 {
-                    bikeAnimateControl = 4;
+                    bikeAnimateControl = 19;
                 }
                 heart(player.life);
                 window.display();
@@ -222,7 +225,7 @@ void Game::openWindow()
             }
             player.hit = false;
         }
-        if(player.life < 0)
+        if(player.life == 0)
         {
             // gameover setting
             sf::Time elapsed = timer.getElapsedTime();
@@ -247,7 +250,7 @@ void Game::openWindow()
 void Game::refresh(Player &player, int bikeAnimateControl, float currentSpeed)
 {
     // bike animation 
-    std::string fileName = "resources/Newbike" + std::to_string(bikeAnimateControl) + ".png";
+    std::string fileName = "resources/Newbike" + std::to_string(bikeAnimateControl/4) + ".png";
     player.t2.loadFromFile(fileName, sf::IntRect(30,370,450,740));
     player.s2.setTexture(player.t2);
     player.checkPosition();
