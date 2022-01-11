@@ -36,10 +36,10 @@ void Login::openWindow()
 {
     mp.x = sf::Mouse::getPosition(this->window).x;
     mp.y = sf::Mouse::getPosition(this->window).y;
-    t1.loadFromFile("button1.png");
+    t1.loadFromFile("resources/button1.png");
     s1.setTexture(t1);
     s1.setPosition(sf::Vector2f(500, 500));
-    t2.loadFromFile("champion_board.png");
+    t2.loadFromFile("resources/champion_board.png");
     s2.setTexture(t2);
     s2.setPosition(sf::Vector2f(2000,500));
     

@@ -5,25 +5,21 @@
 #include <string>
 #include <time.h>
 #include "player.h"
-#include "bike.h"
-
+#include "obstacles.h"
+std::vector<Obstacles> allObstacle;
 class Game
 {
 public:
     int c;
     int k;
     sf::RenderWindow window;
-    sf::Texture t1, t3, ot1;
-    sf::Sprite s1, s3, os1;
-    // sf::CircleShape circle;
-    std::vector<sf::CircleShape> obstacles;
+    sf::Texture t1, t3, gOverT;
+    sf::Sprite s1, s3, gOverS;
     int t1PosX, t3PosX, dovePos;
     time_t startTime, endTime;
     Game();
     void refresh(Player &player ,int bikeAnimateControl);
-    void openWindow(); 
-    void collision(Player &player);
-    void setCircle(int x, int y);
+    void openWindow();
 };
 Game::Game()
 {
@@ -43,7 +39,7 @@ void Game::openWindow()
     s3.setTexture(t3);
     t3PosX = t3.getSize().x;
     s3.setPosition(sf::Vector2f(t3PosX,0));
-
+    
     //setting bike 
     Player player;
     std::string fileName = "resources/Newbike" + std::to_string(k/10) + ".png";
@@ -52,22 +48,16 @@ void Game::openWindow()
     player.s2.setPosition(sf::Vector2f(100,275));
     player.rectangle.setSize(sf::Vector2f(450, 50));
     player.rectangle.setFillColor(sf::Color::Transparent);
-    // player.rectangle.setOutlineColor(sf::Color::Red);
-    // player.rectangle.setOutlineThickness(5);
+    player.rectangle.setOutlineColor(sf::Color::Red);
+    player.rectangle.setOutlineThickness(5);
     player.rectangle.setPosition(100, 600);
 
-    //setting dove
-    ot1.loadFromFile("resources/dove.png", sf::IntRect(1300,460,980, 750));
-    // ot1.loadFromFile("dove.png");
-    os1.setTexture(ot1);
-    os1.setScale(sf::Vector2f(0.15f, 0.15f));
+    // obstacles
     dovePos = 700;
-    os1.setPosition(sf::Vector2f(dovePos, 700));
-    setCircle(dovePos, 720);
-
-
-    // std::cout << os1.getPosition().x << std::endl;
-    // std::cout << os1.getGlobalBounds().width << std::endl;
+    Obstacles dove1(dovePos, 700, -2, 0);
+    allObstacle.push_back(dove1);
+    Obstacles dove2(dovePos+800, 950, -2, 0);
+    allObstacle.push_back(dove2);
 
     // background moving setting 
     t1.setRepeated(true);
@@ -78,15 +68,13 @@ void Game::openWindow()
         "void main() {"
         "    gl_Position = gl_ProjectionMatrix * gl_ModelViewMatrix * gl_Vertex;"
         "    gl_TexCoord[0] = gl_TextureMatrix[0] * gl_MultiTexCoord0;"
-        "    gl_TexCoord[0].x = gl_TexCoord[0].x + offset;" // magic !!!
+        "    gl_TexCoord[0].x = gl_TexCoord[0].x + offset;" // magic
         "    gl_FrontColor = gl_Color;"
         "}"
         , sf::Shader::Vertex);
     float offset = 0.f;
     sf::Clock clock ;
-    
 
-    //bike moving setting
     float dt;
     sf::Clock dt_clock;
 
@@ -107,6 +95,7 @@ void Game::openWindow()
             {
                 sf::Time elapsed = timer.getElapsedTime();
                 std::cout << elapsed.asSeconds() << std::endl;
+                allObstacle.erase(allObstacle.begin(), allObstacle.begin()+allObstacle.size());
                 window.close();
             }
             player.velocity.x = 0.f;
@@ -133,14 +122,12 @@ void Game::openWindow()
                     }
                     case sf::Keyboard::Up:
                     {
-                        player.s2.move(0,-70);
-                        player.rectangle.move(0,-70);
+                        player.velocity.y = -70;
                         break;
                     }
                     case sf::Keyboard::Down:
                     {
-                        player.s2.move(0,70);
-                        player.rectangle.move(0,70);
+                        player.velocity.y = 70;
                         break;
                     }
                     default:
@@ -150,69 +137,107 @@ void Game::openWindow()
                 player.rectangle.move(player.velocity);
             }
         }
-        //first bakgound , second bike , third dove or others ! display~
-        //background drawing
-        window.clear();
-        parallaxShader.setUniform("offset", offset += clock.restart().asSeconds() * speedControler);
-        window.draw(s1, &parallaxShader);
-        
-
-        refresh(player ,bikeAnimateControl) ;
-        bikeAnimateControl++ ;
-        if(bikeAnimateControl > 4)
+        for(int i = 0; i < allObstacle.size(); i++)
         {
-            bikeAnimateControl = 1;
+            
+            bool hit = false;
+            hit = allObstacle[i].collision(player);
+            if(hit)
+                allObstacle.erase(allObstacle.begin()+i);
         }
-        window.display();
+
         
 
+        // refresh player
+        if(!player.hit)
+        {
+            //first bakgound , second bike , third dove or others ! display~
+            //background drawing
+            window.clear();
+            parallaxShader.setUniform("offset", offset += clock.restart().asSeconds() * speedControler);
+            window.draw(s1, &parallaxShader);
+            refresh(player, bikeAnimateControl);
+            bikeAnimateControl++ ;
+            if(bikeAnimateControl > 4)
+            {
+                bikeAnimateControl = 1;
+            }
+            window.display();
+        }
+        else
+        {
+            // player flashing if collide
+            for(int i = 1; i < 20; i++)
+            {
+                (i/3) % 2 == 0 ? player.hit = true : player.hit = false;
+                //first bakgound , second bike , third dove or others ! display~
+                //background drawing
+                window.clear();
+                parallaxShader.setUniform("offset", offset += clock.restart().asSeconds() * speedControler);
+                window.draw(s1, &parallaxShader);
+                refresh(player, bikeAnimateControl);
+                bikeAnimateControl++ ;
+                if(bikeAnimateControl > 4)
+                {
+                    bikeAnimateControl = 1;
+                }
+                window.display();
+                dt = dt_clock.restart().asMilliseconds();
+            }
+            player.hit = false;
+        }
+        if(player.life < 0)
+        {
+            // gameover setting
+            sf::Time elapsed = timer.getElapsedTime();
+            gOverT.loadFromFile("resources/topView_car.png");
+            gOverS.setTexture(gOverT);
+            gOverS.setPosition(sf::Vector2f(700, 700));
+            std::cout << "Game over. You've survived for " << elapsed.asSeconds() << " seconds" << std::endl;
+            allObstacle.erase(allObstacle.begin(), allObstacle.begin()+allObstacle.size());
+            // window.close();
+        }
+
+        
     }
-    
 }
-//refresh  = bike animation 
 void Game::refresh(Player &player, int bikeAnimateControl)
 {
-    //dove ; but this should be in another part !
-    os1.setPosition(sf::Vector2f(dovePos, 700));
-    for(auto &obs : obstacles)
-    {
-        obs.setPosition(sf::Vector2f(dovePos, 720));
-    }
     // bike animation 
     std::string fileName = "resources/Newbike" + std::to_string(bikeAnimateControl) + ".png";
     player.t2.loadFromFile(fileName, sf::IntRect(30,370,450,740));
     player.s2.setTexture(player.t2);
     player.checkPosition();
     player.rectPosition();
-    this->window.draw(player.s2);
-    this->window.draw(this->os1);
-    for(auto &obs : obstacles)
+    for(auto &obs : allObstacle)
     {
-        this->window.draw(obs);
+        // move obstacle
+        obs.move();
     }
-    this->window.draw(player.rectangle);
-}
-void Game::collision(Player &player)
-{
-    c++;
-    for(auto &obs : obstacles)
+    for(auto &obs : allObstacle)
     {
-        sf::FloatRect playerBounds = player.rectangle.getGlobalBounds();
-        sf::FloatRect obsBounds = obs.getGlobalBounds();
-        if( playerBounds.intersects(obsBounds))
+        // obstacle behind bike draw first
+        if(obs.obsSprite.getGlobalBounds().top > player.s2.getGlobalBounds().top)
         {
-            std::cout << "撞到鴿子了"  << c << std::endl;
-            // std::cout << playerBounds.left << "," << obsBounds.left << std::endl;
+            this->window.draw(obs.obsSprite);
+            this->window.draw(obs.circle);
         }
     }
-}
-void Game::setCircle(int x, int y)
-{
-    sf::CircleShape circle;
-    circle.setRadius(40);
-    circle.setFillColor(sf::Color::Transparent);
-    circle.setOutlineColor(sf::Color::Red);
-    circle.setOutlineThickness(5);
-    circle.setPosition(x, y);
-    obstacles.push_back(circle);
+    if(!player.hit)
+    {
+        this->window.draw(player.s2);
+        this->window.draw(player.rectangle);
+    }
+    for(auto &obs : allObstacle)
+    {
+        // obstacle in front of bike
+        if(obs.obsSprite.getGlobalBounds().top <= player.s2.getGlobalBounds().top)
+        {
+            this->window.draw(obs.obsSprite);
+            this->window.draw(obs.circle);
+        }
+    }
+    
+    // game over
+    this->window.draw(gOverS);
 }

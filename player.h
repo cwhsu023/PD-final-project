@@ -7,6 +7,7 @@ public:
     float moveSpeed;
     sf::Vector2f velocity;
     sf::RectangleShape rectangle;
+    bool hit;
     friend class Game;
     Player();
     void checkPosition();
@@ -15,6 +16,7 @@ public:
 Player::Player():moveSpeed(1.f)
 {
     life = 1;
+    hit = false;
 }
 void Player::checkPosition()
 {
