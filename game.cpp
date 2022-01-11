@@ -5,6 +5,7 @@
 #include <string>
 #include <time.h>
 #include "player.h"
+#include "bike.h"
 
 class Game
 {
@@ -77,7 +78,7 @@ void Game::openWindow()
         "void main() {"
         "    gl_Position = gl_ProjectionMatrix * gl_ModelViewMatrix * gl_Vertex;"
         "    gl_TexCoord[0] = gl_TextureMatrix[0] * gl_MultiTexCoord0;"
-        "    gl_TexCoord[0].x = gl_TexCoord[0].x + offset;" // magic
+        "    gl_TexCoord[0].x = gl_TexCoord[0].x + offset;" // magic !!!
         "    gl_FrontColor = gl_Color;"
         "}"
         , sf::Shader::Vertex);
@@ -91,7 +92,11 @@ void Game::openWindow()
 
     sf::Clock timer;
 
-    int bikeAnimateControl =1 ;
+    int bikeAnimateControl = 1 ;
+    //跑了幾圈while 
+    int distane =0 ;
+    //速度
+    float speedControler = 0.01 ;
     while(window.isOpen())
     {
         dt = dt_clock.restart().asMilliseconds();
@@ -112,12 +117,18 @@ void Game::openWindow()
                 {
                     case sf::Keyboard::Right:
                     {
-                        player.velocity.x += player.moveSpeed * dt;
+                        // player.velocity.x += player.moveSpeed * dt;
+                        speedControler += 0.01 ;
+                        if(speedControler >= 0.11  )
+                            speedControler = 0.11 ;
                         break;
                     }
                     case sf::Keyboard::Left:
                     {
-                        player.velocity.x += -player.moveSpeed * dt;
+                        // player.velocity.x += -player.moveSpeed * dt;
+                        speedControler -= 0.02 ;
+                        if(speedControler <= 0 )
+                            speedControler = 0.01 ;
                         break;
                     }
                     case sf::Keyboard::Up:
@@ -142,18 +153,21 @@ void Game::openWindow()
         //first bakgound , second bike , third dove or others ! display~
         //background drawing
         window.clear();
-        parallaxShader.setUniform("offset", offset += clock.restart().asSeconds() / 10);
+        parallaxShader.setUniform("offset", offset += clock.restart().asSeconds() * speedControler);
         window.draw(s1, &parallaxShader);
         
 
         refresh(player ,bikeAnimateControl) ;
         bikeAnimateControl++ ;
-        if(bikeAnimateControl>4)
+        if(bikeAnimateControl > 4)
         {
-            bikeAnimateControl=1;
+            bikeAnimateControl = 1;
         }
         window.display();
+        
+
     }
+    
 }
 //refresh  = bike animation 
 void Game::refresh(Player &player, int bikeAnimateControl)
