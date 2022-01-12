@@ -10,7 +10,6 @@
 #include "bike.h"
 #include "randomDove.h"
 // std::vector<Obstacles> allObstacle;
-// Obstacles tempObs[100];
 class Game
 {
 public:
