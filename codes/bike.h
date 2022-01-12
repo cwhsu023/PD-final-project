@@ -5,8 +5,6 @@ private:
     float speedControl ;
 
 public:
-    friend class Game;
-    friend class Obstacles;
     Bike();
     // ~Bike();
     float bikeSpeed();
@@ -31,13 +29,17 @@ void Bike::testbikeAccelerating()
     if(this -> speedControl < 0)
         this -> speedControl = 0;
     else if(this -> speedControl >=0 && this -> speedControl <= 0.05)
-        this -> speedControl += 0.003 ;
-    else if(this -> speedControl > 0.05 && this -> speedControl <= 0.08) 
-        this -> speedControl += 0.004 ;
-    else if(this -> speedControl > 0.08 && this -> speedControl <= 0.15)
-        this -> speedControl += 0.002 ;
-    else if(this -> speedControl >= 0.15 && this -> speedControl <= 0.2)
         this -> speedControl += 0.01 ;
+    else if(this -> speedControl > 0.05 && this -> speedControl <= 0.08) 
+        this -> speedControl += 0.012 ;
+    else if(this -> speedControl > 0.08 && this -> speedControl <= 0.15)
+        this -> speedControl += 0.014 ;
+    else if(this -> speedControl >= 0.15 && this -> speedControl <= 0.2)
+    {
+        if(this -> speedControl + 2 >= 0.1)
+            this -> speedControl = 0.2 ;
+        this -> speedControl += 0.02 ;
+    }
     else if(this -> speedControl > 0.2 )
         this -> speedControl = 0.2 ;
 }
