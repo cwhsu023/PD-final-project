@@ -39,17 +39,17 @@ void Obstacles::setTrash()
     this->velocity.y = 0;
     this->posX = 500 + (rand() % 27000);
     int n = rand() % 5;
-    if(n == 0){n = 600;}
-    else if(n == 1){n = 690;}
+    if(n == 0){n = 610;}
+    else if(n == 1){n = 730;}
     else if(n == 2){n = 850;}
-    else if(n == 3){n = 950;}
+    else if(n == 3){n = 980;}
     else{n = 1100;}
     this->posY = n;
     this->obsTexture.loadFromFile("resources/trash.png");
     this->obsSprite.setTexture(this->obsTexture);
     this->obsSprite.setScale(sf::Vector2f(0.15f, 0.15f));
     this->obsSprite.setPosition(sf::Vector2f(posX, posY));
-    setCircle(posX, posY+20);
+    setCircle(posX, posY+10);
     std::cout << posX << " " << std::endl;
 }
 void Obstacles::setCircle(int x, int y)
