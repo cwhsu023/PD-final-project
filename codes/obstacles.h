@@ -18,7 +18,7 @@ void Obstacles::setDove()
 {
     this->velocity.x = -(rand() % 10) - 5;
     this->velocity.y = 0;
-    this->posX = 500 + (rand() % 25000);
+    this->posX = 1000 + (rand() % 26500);
     int n = rand() % 5;
     if(n == 0){n = 600;}
     else if(n == 1){n = 690;}
@@ -37,7 +37,7 @@ void Obstacles::setTrash()
 {
     this->velocity.x = 0;
     this->velocity.y = 0;
-    this->posX = 500 + (rand() % 25000);
+    this->posX = 1000 + (rand() % 21000);
     int n = rand() % 5;
     if(n == 0){n = 610;}
     else if(n == 1){n = 730;}
