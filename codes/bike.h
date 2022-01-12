@@ -12,6 +12,7 @@ public:
     void bikeAccelerating();
     void bikeDecelerating();
     void testbikeAccelerating();
+    friend class Game;
     //bike spped : smooth accelerating 
 };
 
