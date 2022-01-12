@@ -77,7 +77,7 @@ void Instruct::openWindow()
     //create keyboard
     t_keyBoard.loadFromFile("resources/arrow_key.png") ;
     s_keyBoard.setTexture(t_keyBoard);
-    s_keyBoard.setPosition(sf::Vector2f(900,600));
+    s_keyBoard.setPosition(sf::Vector2f(800,600));
     s_keyBoard.setScale(sf::Vector2f(2.0f,2.0f)) ;
     while(window.isOpen())
     {
