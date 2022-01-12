@@ -5,7 +5,12 @@
 #include <SFML/System.hpp>
 #include <iostream>
 #include <string>
-#include <windows.h>
+#include <fstream>
+#include <cassert>
+
+using namespace std;
+
+// #include <windows.h>
 // #include "player.h"
 
 // bool isSpriteHover(sf::FloatRect sprite, sf::Vector2f mp) 
@@ -16,7 +21,8 @@
 //     }
 //     return false;
 // }
-
+   
+    
 class Ranking
 {
 public:
@@ -24,6 +30,10 @@ public:
     sf::Texture tbg ,t1, t2, t3, t4, t5;
     sf::Sprite sbg ,s1 ,s2, s3, s4, s5;
     sf::Vector2f mp;
+    sf::Font font;
+    sf::Text text;
+    ifstream ifs;
+    // char buffer[256] = {0};
 
     Ranking();
     void refresh();
@@ -65,6 +75,19 @@ void Ranking::openWindow()
 	s5.setTexture(t5);
     s5.setScale(sf::Vector2f(1.5f, 1.0f));
     s5.setPosition(sf::Vector2f(137, 460));
+
+    std::ifstream ifs("resources/output.txt", std::ios::in);
+    font.loadFromFile("resources/gen.ttf");
+    std::string str((std::istreambuf_iterator<char>(ifs)), std::istreambuf_iterator<char>());
+    //ss << ifs.rdbuf();
+    // std::string str();
+    text.setString(str);
+    text.setFont(font);
+    text.setCharacterSize(20); // exprimée en pixels, pas en points !
+    text.setFillColor(sf::Color::Black);
+    text.setPosition(330 , 400);
+    ifs.close();
+    
     
 
     while(window.isOpen())
@@ -88,5 +111,7 @@ void Ranking::refresh()
     this->window.draw(s3);
     this->window.draw(s4);
     this->window.draw(s5);
+    this->window.draw(text);
+
     this->window.display();
 }
