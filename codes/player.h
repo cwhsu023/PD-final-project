@@ -31,8 +31,8 @@ Player::Player():moveSpeed(1.f)
 
     rectangle.setSize(sf::Vector2f(100, 25));
     rectangle.setFillColor(sf::Color::Transparent);
-    rectangle.setOutlineColor(sf::Color::Red);
-    rectangle.setOutlineThickness(5);
+    // rectangle.setOutlineColor(sf::Color::Red);
+    // rectangle.setOutlineThickness(5);
     rectangle.setPosition(500, 580);
 }
 void Player::checkPosition()
