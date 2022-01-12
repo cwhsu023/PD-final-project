@@ -210,7 +210,7 @@ void Game::openWindow()
             s1.setTexture(t1);
             inLibrary = true ;
         }
-        if(offset > totalDist)
+        if(offset > totalDist + 0.4)
         {
             window.clear();
             // inLibrary = true;
