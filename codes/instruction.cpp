@@ -2,9 +2,10 @@
 #include <SFML/Graphics.hpp>
 #include <SFML/Window.hpp>
 #include <SFML/OpenGL.hpp>
-#include<SFML/System.hpp>
+#include <SFML/System.hpp>
 #include <iostream>
 #include <string>
+// #include "bike.h"
 // #include "player.h"
 
 // bool isSpriteHover(sf::FloatRect sprite, sf::Vector2f mp) 
@@ -20,11 +21,12 @@ class Instruct
 {
 public:
     sf::RenderWindow window;
-    sf::Texture t1 ,t2;
-    sf::Sprite s1 ,s2;
-    float speedControler ;
+    sf::Texture t1 ,t2 ,t_keyBoard;
+    sf::Sprite s1 ,s2 ,s_keyBoard;
+    // float speedControler ;
     int bikeAnimateControl  ;
     sf::Vector2f mp;
+    sf::Vector2f velocity;
 
     Instruct();
     void refresh();
@@ -36,7 +38,7 @@ public:
 Instruct::Instruct()
 {
     this->window.create(sf::VideoMode(1200, 800),"How to play?");
-    speedControler = 0.2 ;
+    // speedControler = 0.2 ;
     bikeAnimateControl = 19 ;
     openWindow();
 }
@@ -63,21 +65,70 @@ void Instruct::openWindow()
         , sf::Shader::Vertex);
     float offset = 0.f;
     sf::Clock clock ;
+    // bike setting
     std::string fileName = "resources/Newbike4.png";
-    t2.loadFromFile(fileName, sf::IntRect(30,200,450,740));
+    t2.loadFromFile(fileName, sf::IntRect(30,370,450,740));
     s2.setTexture(t2);
-    s2.setPosition(sf::Vector2f(200,150));
+    s2.setScale(sf::Vector2f(0.8f,0.8f)) ;
+    s2.setPosition(sf::Vector2f(150,150));
+    //create bike
+    Bike instructBike ;
+
+    //create keyboard
+    t_keyBoard.loadFromFile("resources/arrow_key.png") ;
+    s_keyBoard.setTexture(t_keyBoard);
+    s_keyBoard.setPosition(sf::Vector2f(900,600));
+    s_keyBoard.setScale(sf::Vector2f(2.0f,2.0f)) ;
     while(window.isOpen())
     {
         sf::Event event;
         while(window.pollEvent(event))
         {
             if(event.type == sf::Event::Closed)
-                window.close();  
+                this -> window.close(); 
+
+            velocity.x = 0.f;
+            velocity.y = 0.f;
+            if(sf::Event::KeyPressed)
+            {
+                switch(event.key.code)
+                {
+                    case sf::Keyboard::Up:
+                    {
+                        velocity.y = -40;
+                        break;
+                    }
+                    case sf::Keyboard::Down:
+                    {
+                        velocity.y = 40;
+                        break;
+                    }
+                    case sf::Keyboard::Right:
+                    {
+                        instructBike.testbikeAccelerating();
+                            break;
+                    }
+                    case sf::Keyboard::Left:
+                    {
+                        instructBike.bikeDecelerating();
+                        break;
+                    }
+                    default:
+                        break;
+
+                }
+                s2.move(velocity);
+                // velocity.x = 0.f;
+                // velocity.y = 0.f;
+            }
         }
+        
+       
         window.clear();
+        float speedControler = instructBike.bikeSpeed() ;
         parallaxShader.setUniform("offset", offset += clock.restart().asSeconds() * speedControler);
         window.draw(s1, &parallaxShader);
+        window.draw(s_keyBoard) ;
         refresh();
         bikeAnimateControl-- ;
         if(bikeAnimateControl < 4)
@@ -92,33 +143,25 @@ void Instruct::refresh()
     // this->window.clear(sf::Color::Black);
     // this->window.draw(s1);
     std::string fileName = "resources/Newbike" + std::to_string(bikeAnimateControl/4) + ".png";
-    t2.loadFromFile(fileName, sf::IntRect(30,200,450,740));
+    t2.loadFromFile(fileName, sf::IntRect(30,370,450,740));
     s2.setTexture(t2);
-    // checkPosition();
+    checkPosition();
     this->window.draw(s2);
     this->window.display();
 }
 void Instruct::checkPosition()
 {
-    if(s2.getGlobalBounds().left < 0)
-        s2.setPosition(0, s2.getPosition().y);
-    if(s2.getGlobalBounds().left + s2.getGlobalBounds().width > 2950)
-        s2.setPosition(2950 - s2.getGlobalBounds().width, s2.getPosition().y);
-    if(s2.getPosition().y < 275)
-        s2.setPosition(s2.getPosition().x, 275);
-    if(s2.getGlobalBounds().top + s2.getGlobalBounds().height > 1250)
-        s2.setPosition(s2.getPosition().x, 1250 - s2.getGlobalBounds().height);
-    // std::cout << s2.getPosition().x << std::endl;
-    // std::cout << s2.getPosition().y << std::endl;
+    if(s2.getGlobalBounds().left < 150)
+        s2.setPosition(150, s2.getPosition().y);
+    if(s2.getGlobalBounds().left + s2.getGlobalBounds().width > 510)
+        s2.setPosition(510 - s2.getGlobalBounds().width, s2.getPosition().y);
+    if(s2.getPosition().y < 150)
+        s2.setPosition(s2.getPosition().x, 150);
+    if(s2.getGlobalBounds().top + s2.getGlobalBounds().height > 800)
+        s2.setPosition(s2.getPosition().x, 800 - s2.getGlobalBounds().height);
+    // std::cout << s2.getGlobalBounds().left << std::endl;
+    // std::cout << s2.getGlobalBounds().left + s2.getGlobalBounds().width << std::endl;
+    // std::cout << s2.getGlobalBounds().top << std::endl;
+    // std::cout << s2.getGlobalBounds().top + s2.getGlobalBounds().height << std::endl;
+    // std::cout << std::endl;
 }
-// void Instruct::rectPosition()
-// {
-//     if(rectangle.getGlobalBounds().left < 0)
-//         rectangle.setPosition(0, rectangle.getPosition().y);
-//     if(rectangle.getGlobalBounds().left + rectangle.getGlobalBounds().width > 2950)
-//         rectangle.setPosition(2950 - rectangle.getGlobalBounds().width, rectangle.getPosition().y);
-//     if(rectangle.getPosition().y < 600)
-//         rectangle.setPosition(rectangle.getPosition().x, 600);
-//     if(rectangle.getGlobalBounds().top + rectangle.getGlobalBounds().height > 1200)
-//         rectangle.setPosition(rectangle.getPosition().x, 1200 - rectangle.getGlobalBounds().height);
-// }
