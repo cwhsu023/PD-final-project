@@ -21,11 +21,11 @@ Player::Player():moveSpeed(1.f)
     t2.loadFromFile(fileName, sf::IntRect(30,370,450,740));
     s2.setTexture(t2);
     s2.setPosition(sf::Vector2f(200,275));
-    rectangle.setSize(sf::Vector2f(550, 50));
+    rectangle.setSize(sf::Vector2f(220, 25));
     rectangle.setFillColor(sf::Color::Transparent);
-    // rectangle.setOutlineColor(sf::Color::Red);
-    // rectangle.setOutlineThickness(5);
-    rectangle.setPosition(100, 600);
+    rectangle.setOutlineColor(sf::Color::Red);
+    rectangle.setOutlineThickness(5);
+    rectangle.setPosition(400, 600);
 }
 void Player::checkPosition()
 {
