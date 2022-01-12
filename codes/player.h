@@ -1,8 +1,8 @@
 class Player
 {
 public:
-    sf::Texture t2;
-    sf::Sprite s2;
+    sf::Texture t2 ,t_victory;
+    sf::Sprite s2 ,s_victory;
     int life;
     float moveSpeed;
     sf::Vector2f velocity;
@@ -21,6 +21,13 @@ Player::Player():moveSpeed(1.f)
     t2.loadFromFile(fileName, sf::IntRect(30,370,450,740));
     s2.setTexture(t2);
     s2.setPosition(sf::Vector2f(200,275));
+    //勝利pose
+    std::string fileName2 = "resources/NewYahoo3.png";
+    t_victory.loadFromFile(fileName2, sf::IntRect(600,300,450,740)); //, sf::IntRect(30,370,450,740)
+    s_victory.setTexture(t_victory);
+    s_victory.setScale(sf::Vector2f(0.8f,0.8f));
+    s_victory.setPosition(sf::Vector2f(200,400));
+
     rectangle.setSize(sf::Vector2f(100, 25));
     rectangle.setFillColor(sf::Color::Transparent);
     rectangle.setOutlineColor(sf::Color::Red);
