@@ -6,9 +6,11 @@
 #include <time.h>
 #include <stdlib.h>
 #include "player.h"
-#include "obstacles.h"
+// #include "obstacles.h"
 #include "bike.h"
-std::vector<Obstacles> allObstacle;
+#include "randomDove.h"
+// std::vector<Obstacles> allObstacle;
+// Obstacles tempObs[100];
 class Game
 {
 public:
@@ -24,6 +26,7 @@ public:
     void openWindow();
     void heart(int playerLife);
     friend class Obstacles;
+    // void getDove();
 };
 Game::Game()
 {
@@ -82,9 +85,9 @@ void Game::openWindow()
 
     // obstacles
     dovePos = 700;
+    // srand(time(NULL));
     srand(time(NULL));
-    // Obstacles dove1(500 + (rand() % 10000), 600 + (rand() % 600), -(rand() % 10) - 5, 0);
-    // allObstacle.push_back(dove1);
+    getRandomDove getRandomDove;
 
 
     // background moving setting 
@@ -116,7 +119,6 @@ void Game::openWindow()
     Bike bike;
     while(window.isOpen())
     {
-        
         dt = dt_clock.restart().asMilliseconds();
         sf::Event event;
         while(window.pollEvent(event))
@@ -165,7 +167,7 @@ void Game::openWindow()
         }
         for(int i = 0; i < allObstacle.size(); i++)
         {
-            
+            // chceck collision
             bool hit = false;
             hit = allObstacle[i].collision(player);
             if(hit)
