@@ -4,7 +4,7 @@
 #include <iostream>
 #include <string>
 #include "game.cpp"
-#include "ranking.cpp"
+// #include "ranking.cpp"
 #include "instruction.cpp"
 
 bool isSpriteHover(sf::FloatRect sprite, sf::Vector2f mp) 
@@ -93,7 +93,7 @@ void Login::openWindow()
                     if(event.type == sf::Event::MouseButtonReleased &&  event.mouseButton.button == sf::Mouse::Left)
                     {
                         // 排行榜的資訊
-                        Ranking rank;
+                        // Ranking rank;
                     }
                 }
             if(isSpriteHover(s4.getGlobalBounds(), sf::Vector2f(event.mouseButton.x, event.mouseButton.y)) == true)
@@ -102,6 +102,8 @@ void Login::openWindow()
                     {
                         // 遊戲說明
                         Instruct instruct;
+                        if(!instruct.window.isOpen())
+                            Login login;
                     }
                 }
         }
