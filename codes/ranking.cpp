@@ -1,12 +1,13 @@
-#include<SFML/Audio.hpp>
+#include <SFML/Audio.hpp>
 #include <SFML/Graphics.hpp>
 #include <SFML/Window.hpp>
 #include <SFML/OpenGL.hpp>
-#include<SFML/System.hpp>
+#include <SFML/System.hpp>
 #include <iostream>
 #include <string>
+#include <windows.h>
+// #include "player.h"
 
-// 如果需要用滑鼠點東西（希望不會爆掉哈哈哈）
 // bool isSpriteHover(sf::FloatRect sprite, sf::Vector2f mp) 
 // {
 //     if (sprite.contains(mp))
@@ -20,26 +21,52 @@ class Ranking
 {
 public:
     sf::RenderWindow window;
-    sf::Texture t1;  // 需要新的圖片在這邊增加texture, sprite
-    sf::Sprite s1;
+    sf::Texture tbg ,t1, t2, t3, t4, t5;
+    sf::Sprite sbg ,s1 ,s2, s3, s4, s5;
     sf::Vector2f mp;
+
     Ranking();
     void refresh();
-    void openWindow(); 
+    void openWindow();
 };
 Ranking::Ranking()
 {
-    this->window.create(sf::VideoMode(1000, 600),"Ranking!!!");  // 視窗大小
+    this->window.create(sf::VideoMode(863, 620),"Ranking");
     openWindow();
 }
 void Ranking::openWindow()
 {
-    // 如果要偵測滑鼠開這兩行
-    // mp.x = sf::Mouse::getPosition(this->window).x;
-    // mp.y = sf::Mouse::getPosition(this->window).y;
-    t1.loadFromFile("resources/button1.png");  // 插入圖片
+    tbg.loadFromFile("resources/rkbg.png");
+	sbg.setTexture(tbg);
+    sbg.setScale(sf::Vector2f(1.0f, 1.0f));
+    
+    t1.loadFromFile("resources/wood.png");
     s1.setTexture(t1);
-    s1.setPosition(sf::Vector2f(500, 500));  // 圖片位置
+    s1.setScale(sf::Vector2f(1.5f, 1.0f));
+    s1.setPosition(sf::Vector2f(137, 20));
+    
+	t2.loadFromFile("resources/wood.png");
+    s2.setTexture(t2);
+    s2.setScale(sf::Vector2f(1.5f, 1.0f));
+    s2.setPosition(sf::Vector2f(137, 130));
+    
+    
+	t3.loadFromFile("resources/wood.png");
+    s3.setTexture(t3);
+    s3.setScale(sf::Vector2f(1.5f, 1.0f));
+    s3.setPosition(sf::Vector2f(137, 240));
+    
+	t4.loadFromFile("resources/wood.png");
+    s4.setTexture(t4);
+    s4.setScale(sf::Vector2f(1.5f, 1.0f));
+    s4.setPosition(sf::Vector2f(137, 350));
+    
+	t5.loadFromFile("resources/wood.png");
+	s5.setTexture(t5);
+    s5.setScale(sf::Vector2f(1.5f, 1.0f));
+    s5.setPosition(sf::Vector2f(137, 460));
+    
+
     while(window.isOpen())
     {
         sf::Event event;
@@ -47,20 +74,19 @@ void Ranking::openWindow()
         {
             if(event.type == sf::Event::Closed)
                 window.close();  
-            // if(isSpriteHover(s1.getGlobalBounds(), sf::Vector2f(event.mouseButton.x, event.mouseButton.y)) == true)
-            //     {
-            //         if(event.type == sf::Event::MouseButtonReleased &&  event.mouseButton.button == sf::Mouse::Left)
-            //         {
-            //               // 點選後的指令
-            //         }
-            //     }
         }
+        window.clear();
         refresh();
     }
 }
 void Ranking::refresh()
 {
     this->window.clear(sf::Color::Black);
-    this->window.draw(s1);  // 顯示圖片
+    this->window.draw(sbg);
+    this->window.draw(s1);
+    this->window.draw(s2);
+    this->window.draw(s3);
+    this->window.draw(s4);
+    this->window.draw(s5);
     this->window.display();
 }
