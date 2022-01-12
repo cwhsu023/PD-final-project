@@ -5,11 +5,20 @@
 #include <string>
 #include <time.h>
 #include <stdlib.h>
+#include <fstream>
 #include "player.h"
 // #include "obstacles.h"
 #include "bike.h"
 #include "randomDove.h"
 // std::vector<Obstacles> allObstacle;
+bool isSpriteHover(sf::FloatRect sprite, sf::Vector2f mp) 
+{
+    if (sprite.contains(mp))
+    {
+        return true;
+    }
+    return false;
+}
 class Game
 {
 public:
@@ -18,6 +27,10 @@ public:
     sf::RenderWindow window;
     sf::Texture t1, gOverT, t_heart1, t_heart2, t_heart3;
     sf::Sprite s1, gOverS, s_heart1, s_heart2, s_heart3;
+    sf::Font font;
+    sf::Text text;
+    sf::RectangleShape r1, r2;
+    sf::Vector2f mp;
     int t1PosX, t3PosX, dovePos;
     time_t startTime, endTime;
     Game();
@@ -72,6 +85,10 @@ void Game::heart(int playerLife)
 }
 void Game::openWindow()
 {
+    // mouse position
+    mp.x = sf::Mouse::getPosition(this->window).x;
+    mp.y = sf::Mouse::getPosition(this->window).y;
+
     //setting backgound
     t1.loadFromFile("resources/NEWroad.png");
     s1.setTexture(t1);
@@ -81,12 +98,14 @@ void Game::openWindow()
     //setting bike 
     Player player;
     
-
     // obstacles
     dovePos = 700;
     // srand(time(NULL));
     srand(time(NULL));
     getRandomDove getRandomDove;
+
+    // text setting
+    font.loadFromFile("resources/gen.ttf");
 
 
     // background moving setting 
@@ -129,6 +148,23 @@ void Game::openWindow()
                 allObstacle.erase(allObstacle.begin(), allObstacle.begin()+allObstacle.size());
                 window.close();
             }
+            if(isSpriteHover(r1.getGlobalBounds(), sf::Vector2f(event.mouseButton.x, event.mouseButton.y)) == true)
+                {
+                    if(event.type == sf::Event::MouseButtonReleased &&  event.mouseButton.button == sf::Mouse::Left)
+                    {
+                        allObstacle.erase(allObstacle.begin(), allObstacle.begin()+allObstacle.size());
+                        window.close();
+                        Game game;
+                    }
+                }
+            if(isSpriteHover(r2.getGlobalBounds(), sf::Vector2f(event.mouseButton.x, event.mouseButton.y)) == true)
+                {
+                    if(event.type == sf::Event::MouseButtonReleased &&  event.mouseButton.button == sf::Mouse::Left)
+                    {
+                        allObstacle.erase(allObstacle.begin(), allObstacle.begin()+allObstacle.size());
+                        window.close();
+                    }
+                }
             player.velocity.x = 0.f;
             player.velocity.y = 0.f;
             if(sf::Event::KeyPressed)
@@ -182,6 +218,8 @@ void Game::openWindow()
             //first bakgound , second bike , third dove or others ! display~
             //background drawing
             window.clear();
+            if(!player.alive)
+                bike.speedControl = 0;
             float speedControler = bike.bikeSpeed() ;
             float currentSpeed = clock.restart().asSeconds() * speedControler;
             offset += currentSpeed;
@@ -226,15 +264,33 @@ void Game::openWindow()
             }
             player.hit = false;
         }
-        if(player.life == 0)
+        if(player.life <= 0 && player.alive)
         {
             // gameover setting
             sf::Time elapsed = timer.getElapsedTime();
-            gOverT.loadFromFile("resources/topView_car.png");
+            gOverT.loadFromFile("resources/gameover.png");
             gOverS.setTexture(gOverT);
-            gOverS.setPosition(sf::Vector2f(700, 700));
+            gOverS.setPosition(sf::Vector2f(1150, 400));
+            gOverS.setScale(sf::Vector2f(1.2f,1.2f));
+            r1.setSize(sf::Vector2f(110, 25));
+            r1.setFillColor(sf::Color::Transparent);
+            // r1.setOutlineColor(sf::Color::Red);
+            // r1.setOutlineThickness(5);
+            r1.setPosition(1322, 610);
+            r2.setSize(sf::Vector2f(110, 25));
+            r2.setFillColor(sf::Color::Transparent);
+            // r2.setOutlineColor(sf::Color::Red);
+            // r2.setOutlineThickness(5);
+            r2.setPosition(1322, 675);
             std::cout << "Game over. You've survived for " << elapsed.asSeconds() << " seconds" << std::endl;
             allObstacle.erase(allObstacle.begin(), allObstacle.begin()+allObstacle.size());
+            player.alive = false;
+
+            // text.setString(std::to_string(elapsed.asSeconds()));
+            // text.setFont(font);
+            // text.setCharacterSize(20); // exprimée en pixels, pas en points !
+            // text.setFillColor(sf::Color::Black);
+            // text.setPosition(330 , 400);
             // window.close();
         }
         if(offset > totalDist && !inLibrary )
@@ -250,6 +306,13 @@ void Game::openWindow()
 }
 void Game::refresh(Player &player, int bikeAnimateControl, float currentSpeed)
 {
+    // game over
+    if(!player.alive)
+    {
+        this->window.draw(gOverS);
+        this->window.draw(r1);
+        this->window.draw(r2);
+    }
     // bike animation 
     std::string fileName = "resources/Newbike" + std::to_string(bikeAnimateControl/4) + ".png";
     player.t2.loadFromFile(fileName, sf::IntRect(30,370,450,740));
@@ -284,8 +347,5 @@ void Game::refresh(Player &player, int bikeAnimateControl, float currentSpeed)
             this->window.draw(obs.obsSprite);
             this->window.draw(obs.circle);
         }
-    }
-    
-    // game over
-    this->window.draw(gOverS);
+    }    
 }
