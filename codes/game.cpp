@@ -25,8 +25,8 @@ public:
     int c, totalDist;
     bool inLibrary;
     sf::RenderWindow window;
-    sf::Texture t1, gOverT, t_heart1, t_heart2, t_heart3, t_libraryFront;
-    sf::Sprite s1, gOverS, s_heart1, s_heart2, s_heart3, s_libraryFront;
+    sf::Texture t1, gOverT, t_heart1, t_heart2, t_heart3, t_libraryFront, winT;
+    sf::Sprite s1, gOverS, s_heart1, s_heart2, s_heart3, s_libraryFront, winS;
     sf::Font font;
     sf::Text text, text2;
     sf::RectangleShape r1, r2;
@@ -246,7 +246,9 @@ void Game::openWindow()
                 bgm.stop();
                 win.play();
                 sf::Time elapsed = timer.getElapsedTime();
-                std::string winStr = "You won!!! You did it in " + std::to_string(elapsed.asSeconds() - c) + " seconds!!!";
+                float sss = static_cast<float>(static_cast<int>(elapsed.asSeconds() * 100)) / 100;
+                std::cout << sss << std::endl;
+                std::string winStr = "You won!!! You did it in " + std::to_string(sss - c) + " seconds!!!";
                 std::cout << winStr << std::endl;
                 text.setString(winStr);
                 text.setFont(font);
