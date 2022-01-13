@@ -32,7 +32,7 @@ public:
     sf::Text text, text2;
     sf::RectangleShape r1, r2;
     sf::Vector2f mp;
-    sf::SoundBuffer bgmBuffer, winBuffer, loseBuffer, crashBuffer;
+    sf::SoundBuffer bgmBuffer, winBuffer, loseBuffer, crashBuffer, startBuffer;
     int t1PosX, t3PosX, dovePos;
     time_t startTime, endTime;
     Game();
@@ -41,7 +41,7 @@ public:
     void heart(int playerLife);
     friend class Obstacles;
     void victory(Player &player , int victoryAnimateControl);
-    // void getDove();
+    int wirteToFile(int sss);
 };
 Game::Game()
 {
@@ -89,7 +89,7 @@ void Game::heart(int playerLife)
 void Game::openWindow()
 {
     //playing BGM
-	bgmBuffer.loadFromFile("resources/gameBGM.ogg");
+	bgmBuffer.loadFromFile("resources/loginBGM.ogg");
 	sf::Sound bgm(bgmBuffer);
 
     //setting win & fail music
@@ -99,6 +99,8 @@ void Game::openWindow()
 	sf::Sound lose(loseBuffer);
     crashBuffer.loadFromFile("resources/crash.ogg");
 	sf::Sound crash(crashBuffer);
+    startBuffer.loadFromFile("resources/ggo.ogg");
+    sf::Sound start(startBuffer);
 
     // mouse position
     mp.x = sf::Mouse::getPosition(this->window).x;
@@ -156,6 +158,7 @@ void Game::openWindow()
     //速度
     // float speedControler = 0.01 ;
     Bike bike;
+    start.play();
     while(window.isOpen())
     {
         dt = dt_clock.restart().asMilliseconds();
@@ -164,8 +167,6 @@ void Game::openWindow()
         {
             if(event.type == sf::Event::Closed)
             {
-                sf::Time elapsed = timer.getElapsedTime();
-                std::cout << elapsed.asSeconds() << std::endl;
                 allObstacle.erase(allObstacle.begin(), allObstacle.begin()+allObstacle.size());
                 window.close();
             }
@@ -173,6 +174,7 @@ void Game::openWindow()
                 {
                     if(event.type == sf::Event::MouseButtonReleased &&  event.mouseButton.button == sf::Mouse::Left)
                     {
+                        std::cout << "play again" << std::endl;
                         allObstacle.erase(allObstacle.begin(), allObstacle.begin()+allObstacle.size());
                         window.close();
                         Game game;
@@ -216,13 +218,8 @@ void Game::openWindow()
                     }
                     case sf::Keyboard::LShift:
                     {
-                        std::string newRecord = "Wow!!! New High Score!!!";
-                        text2.setString(newRecord);
-                        text2.setFont(font);
-                        text2.setCharacterSize(100); // exprimée en pixels, pas en points !
-                        text2.setFillColor(sf::Color::Black);
-                        text2.setPosition(sf::Vector2f(200,600));
-                        this->c = 3;
+                        player.life = 3;  // 無敵模式
+                        break;
                     }
                     default:
                         break;
@@ -250,15 +247,43 @@ void Game::openWindow()
                 win.play();
                 sf::Time elapsed = timer.getElapsedTime();
                 int sss = elapsed.asSeconds() * 100;
+                int place = wirteToFile(sss);
+                std::cout << place << std::endl;
                 int sc1 = sss / 100;
                 int sc2 = sss - sc1*100;
-                std::string winStr = "You won!!! You did it in " + std::to_string(sc1 - c) + "." + std::to_string(sc2) + " seconds!!!";
+                std::string winStr = "You won!!! You did it in " + std::to_string(sc1) + "." + std::to_string(sc2) + " seconds!!!";
                 std::cout << winStr << std::endl;
-                text.setString(winStr);
+                text.setString(std::to_string(sc1) + "." + std::to_string(sc2));
                 text.setFont(font);
-                text.setCharacterSize(100); // exprimée en pixels, pas en points !
+                text.setCharacterSize(70);
                 text.setFillColor(sf::Color::Black);
-                text.setPosition(sf::Vector2f(200,400));
+                text.setPosition(sf::Vector2f(330,445));
+                std::string p;
+                if(place == 1)
+                    p = "New High Score!!!";
+                else if(place == 0)
+                    p = "The slowest so far!!!";
+                else
+                    p = "#" + std::to_string(place) + " on the scoreboard.";
+                text2.setString(p);
+                text2.setFont(font);
+                text2.setCharacterSize(45);
+                text2.setFillColor(sf::Color::Red);
+                text2.setPosition(sf::Vector2f(105,250));
+                winT.loadFromFile("resources/win.png");
+                winS.setTexture(winT);
+                winS.setPosition(sf::Vector2f(100, 300));
+                winS.setScale(sf::Vector2f(0.8f,0.8f));r1.setSize(sf::Vector2f(110, 25));
+                r1.setSize(sf::Vector2f(200, 32));
+                r1.setFillColor(sf::Color::Transparent);
+                // r1.setOutlineColor(sf::Color::Red);
+                // r1.setOutlineThickness(5);
+                r1.setPosition(275, 610);
+                r2.setSize(sf::Vector2f(200, 32));
+                r2.setFillColor(sf::Color::Transparent);
+                // r2.setOutlineColor(sf::Color::Red);
+                // r2.setOutlineThickness(5);
+                r2.setPosition(275, 740);
                 player.arrive = true;
             }
             // inLibrary = true;
@@ -379,38 +404,6 @@ void Game::openWindow()
             std::cout << "Game over. You've survived for " << elapsed.asSeconds() << " seconds" << std::endl;
             allObstacle.erase(allObstacle.begin(), allObstacle.begin()+allObstacle.size());
             player.alive = false;
-
-            float score = elapsed.asSeconds();
-            std::ifstream inFile("resources/output.txt");
-            std::ofstream outFile("resources/output.txt");
-            std::string place;
-            float file_score;
-            float all_score[5] = {0};
-            std::cout << score << std::endl;
-            if(inFile && outFile)  //讀得到檔案
-            {
-                int i = 0;
-                while(inFile >> file_score)
-                {
-                    if(score < file_score)
-                    {
-                        float temp_score = file_score;
-                        file_score = score;
-                        score = temp_score;
-                    }
-                    all_score[i] = file_score;
-                    i++;
-                    std::cout << i << "," << file_score << "," << score << std::endl;
-                }
-                outFile << "No.1 " << all_score[0] << std::endl;
-                outFile << "No.2 " << all_score[1] << std::endl;
-                outFile << "No.3 " << all_score[2] << std::endl;
-                outFile << "No.4 " << all_score[3] << std::endl;
-                outFile << "No.5 " << all_score[4] << std::endl;
-            }
-            inFile.close();
-            outFile.close();
-            // window.close();
         }
 
         
@@ -470,6 +463,69 @@ void Game::victory(Player &player , int victoryAnimateControl)
     player.s_victory.setTexture(player.t_victory);
     this -> window.draw(player.s_victory);
     
+    this->window.draw(winS);
     this->window.draw(text);
-    this->window.draw(text2);
+    this->window.draw(r1);
+    this->window.draw(r2);
+    if(this->c < 0)
+    {
+        this->window.draw(text2);
+    }
+    c++;
+    if(c == 4)
+        c = -4;
+}
+int Game::wirteToFile(int sss)
+{
+    std::ifstream inFile("resources/output.txt");
+    int score;
+    int scoreCnt = 0;
+    if(inFile)  //讀得到檔案
+    {
+        while(inFile >> score)
+        {
+            scoreCnt++;
+        }
+    }
+    inFile.close();
+    std::ifstream inFile2("resources/output.txt");
+    float* scoreArray = new float[scoreCnt];
+    scoreCnt = 0;
+    while(inFile2 >> score)
+    {
+        scoreArray[scoreCnt] = score;
+        scoreCnt++;
+    }
+    inFile2.close();
+    int the_score = sss;
+    int temp_score = 0;
+    int place = 0;
+    std::ofstream outFile("resources/output.txt");
+    if(outFile)
+    {
+        for(int i = 0; i < scoreCnt+1; i++)
+        {
+            if(i < scoreCnt)
+            {
+                if(scoreArray[i] < the_score)
+                {
+                    temp_score = scoreArray[i];
+                }
+                else
+                {
+                    temp_score = the_score;
+                    the_score = scoreArray[i];
+                    if(place == 0)
+                        place = i + 1;
+                }
+            }
+            else
+            {
+                temp_score = the_score;
+            }
+            outFile << temp_score << std::endl;
+        }
+    }
+    outFile.close();
+    return place;
 }
