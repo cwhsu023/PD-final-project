@@ -31,7 +31,7 @@ public:
     sf::Text text, text2;
     sf::RectangleShape r1, r2;
     sf::Vector2f mp;
-    sf::SoundBuffer bgmBuffer, winBuffer, loseBuffer;
+    sf::SoundBuffer bgmBuffer, winBuffer, loseBuffer, crashBuffer;
     int t1PosX, t3PosX, dovePos;
     time_t startTime, endTime;
     Game();
@@ -91,11 +91,13 @@ void Game::openWindow()
 	bgmBuffer.loadFromFile("resources/gameBGM.ogg");
 	sf::Sound bgm(bgmBuffer);
 
-    //setting win & fail music
+    //setting  music
 	winBuffer.loadFromFile("resources/win.ogg");
 	sf::Sound win(winBuffer);
 	loseBuffer.loadFromFile("resources/lose.ogg");
 	sf::Sound lose(loseBuffer);
+	crashBuffer.loadFromFile("resources/crash.ogg");
+	sf::Sound crash(crashBuffer);
 
     // mouse position
     mp.x = sf::Mouse::getPosition(this->window).x;
@@ -216,7 +218,7 @@ void Game::openWindow()
                         std::string newRecord = "Wow!!! New High Score!!!";
                         text2.setString(newRecord);
                         text2.setFont(font);
-                        text2.setCharacterSize(100); // exprimée en pixels, pas en points !
+                        text2.setCharacterSize(100); // exprimee en pixels, pas en points !
                         text2.setFillColor(sf::Color::Black);
                         text2.setPosition(sf::Vector2f(200,600));
                         this->c = 3;
@@ -252,7 +254,7 @@ void Game::openWindow()
                 std::cout << winStr << std::endl;
                 text.setString(winStr);
                 text.setFont(font);
-                text.setCharacterSize(100); // exprimée en pixels, pas en points !
+                text.setCharacterSize(100); // exprimee en pixels, pas en points !
                 text.setFillColor(sf::Color::Black);
                 text.setPosition(sf::Vector2f(200,400));
                 player.arrive = true;
@@ -303,7 +305,8 @@ void Game::openWindow()
         {
             //first bakgound , second bike , third dove or others ! display~
             //background drawing
-            window.clear();
+            crash.play();
+			window.clear();
             if(!player.alive)
                 bike.speedControl = 0;
             float speedControler = bike.bikeSpeed() ;
