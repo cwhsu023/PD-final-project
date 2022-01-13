@@ -3,9 +3,13 @@
 #include <SFML/Window.hpp>
 #include <SFML/OpenGL.hpp>
 #include <SFML/System.hpp>
+// #include <>
 #include <iostream>
 #include <string>
-#include <windows.h>
+#include <fstream>
+#include <vector>
+#include <sstream>
+// #include <windows.h>
 // #include "player.h"
 
 // bool isSpriteHover(sf::FloatRect sprite, sf::Vector2f mp) 
@@ -25,6 +29,8 @@ public:
     sf::Sprite sbg ,s1 ,s2, s3, s4, s5;
     sf::SoundBuffer dingbuffer;
     sf::Vector2f mp;
+    sf::Font font;
+    sf::Text text;
 
     Ranking();
     void refresh();
@@ -66,6 +72,12 @@ void Ranking::openWindow()
 	s5.setTexture(t5);
     s5.setScale(sf::Vector2f(1.5f, 1.0f));
     s5.setPosition(sf::Vector2f(137, 460));
+
+    font.loadFromFile("resources/gen.ttf");
+    text.setFont(font);
+    text.setCharacterSize(50);
+    text.setFillColor(sf::Color::White);
+
     
     dingbuffer.loadFromFile("resources/dingdon.ogg");
 	sf::Sound ding(dingbuffer);
@@ -82,7 +94,82 @@ void Ranking::openWindow()
         }
         window.clear();
         refresh();
+        std::ifstream ifs("resources/output.txt", std::ios::in);
+        std::string s_scores;
+        if(!ifs.is_open())
+        {
+            std::cout << "Failed to open"<< std::endl ;
+        }
+        else
+        {
+            // std::string s_scores;
+            //std::string name;
+            int score;
+            int sc1,sc2;
+            int i=0;
+            for(int i = 0; i < 5; i++)
+            {
+                //std::cout << score;
+                ifs >> score;
+                int sc1 = score / 100;
+                int sc2 = score - sc1*100;
+                text.setString("TOP"+std::to_string(i+1)+":   "+std::to_string(sc1) + "." + std::to_string(sc2)+ "  s");
+                text.setPosition(240, 60+110*i);
+                this->window.draw(text);
+            }
+            // while(std::getline(ifs, s_scores))
+            // {
+            //     std::cout << s_scores << std::endl ;
+            //     // std::cout << s_scores[0] << std::endl;
+            //     // names.push_back(s_scores);
+            // }
+            // std::cout << s_scores  <<"y"<<std::endl;
+            this->window.display();
+            ifs.close();
+            //std::cout << s_scores  <<"y"<<std::endl;
+        }
+        
     }
+    //input ranking.txt 
+    // std::string fileName("resources/output.txt");
+    // std::fstream file_out;
+    // file_out.open(filename ,std::ios_base::out);
+    // std::ifstream ifs("resources/output.txt", std::ios::in);
+    // std::string s_scores;
+    // if(!ifs.is_open())
+    // {
+    //     std::cout << "Failed to open"<< std::endl ;
+    // }
+    // else
+    // {
+    //     // std::string s_scores;
+    //     std::string name;
+    //     int score;
+    //     int sc1,sc2;
+    //     int i=0;
+    //     while (ifs >> score)
+    //         {
+    //             sc1 = score/100;
+    //             sc2 = score%100;
+    //             text.setString(std::to_string(sc1) + "." + std::to_string(sc2));
+    //             text.setPosition(20, 20+5*i);
+    //             this->window.draw(text);
+    //             i++;
+    //         }
+    //     // while(std::getline(ifs, s_scores))
+    //     // {
+    //     //     std::cout << s_scores << std::endl ;
+    //     //     // std::cout << s_scores[0] << std::endl;
+    //     //     // names.push_back(s_scores);
+    //     // }
+    //     // std::cout << s_scores  <<"y"<<std::endl;
+    //     ifs.close();
+    //     //std::cout << s_scores  <<"y"<<std::endl;
+    // }
+
+
+
+
 }
 void Ranking::refresh()
 {
@@ -93,6 +180,6 @@ void Ranking::refresh()
     this->window.draw(s3);
     this->window.draw(s4);
     this->window.draw(s5);
-    this->window.display();
+    
 }
 
