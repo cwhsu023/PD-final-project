@@ -4,17 +4,10 @@
 #include <iostream>
 #include <string>
 #include "game.cpp"
-// #include "ranking.cpp"
+#include "ranking.cpp"
 #include "instruction.cpp"
 
-bool isSpriteHover(sf::FloatRect sprite, sf::Vector2f mp) 
-{
-    if (sprite.contains(mp))
-    {
-        return true;
-    }
-    return false;
-}
+
 
 class Login
 {
@@ -23,6 +16,7 @@ public:
     sf::Texture t1, t2, b1, t3, t4;
     sf::Sprite s1, s2, bb1, s3, s4; 
     sf::Vector2f mp;
+    sf::SoundBuffer bgmBuffer;
     Login();
     bool Open() {return window.isOpen();}
     void refresh();
@@ -38,10 +32,16 @@ void Login::openWindow()
     mp.x = sf::Mouse::getPosition(this->window).x;
     mp.y = sf::Mouse::getPosition(this->window).y;
 
-    // bike
+	//playing BGM
+	bgmBuffer.loadFromFile("resources/loginBGM.ogg");
+	sf::Sound bgm(bgmBuffer);
+	bgm.play();
+	bgm.setLoop(true);
+	
+	// bike
     t1.loadFromFile("resources/NEWbike1.png");
     s1.setTexture(t1);
-    s1.setPosition(sf::Vector2f(2000, 200));
+    s1.setPosition(sf::Vector2f(1000, 200));
 
     // ranking
     t2.loadFromFile("resources/champion_board.png");
@@ -82,6 +82,7 @@ void Login::openWindow()
                     if(event.type == sf::Event::MouseButtonReleased &&  event.mouseButton.button == sf::Mouse::Left)
                     {
                         // play game
+                        bgm.stop();
                         window.close();
                         Game game;
                         if(!game.window.isOpen())
@@ -93,7 +94,7 @@ void Login::openWindow()
                     if(event.type == sf::Event::MouseButtonReleased &&  event.mouseButton.button == sf::Mouse::Left)
                     {
                         // 排行榜的資訊
-                        // Ranking rank;
+                        Ranking rank;
                     }
                 }
             if(isSpriteHover(s4.getGlobalBounds(), sf::Vector2f(event.mouseButton.x, event.mouseButton.y)) == true)
@@ -102,8 +103,6 @@ void Login::openWindow()
                     {
                         // 遊戲說明
                         Instruct instruct;
-                        if(!instruct.window.isOpen())
-                            Login login;
                     }
                 }
         }
