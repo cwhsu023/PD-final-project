@@ -1,6 +1,7 @@
 #include <SFML/Graphics.hpp>
 #include <SFML/Window.hpp>
 #include <SFML/OpenGL.hpp>
+#include <SFML/Audio.hpp>
 #include <iostream>
 #include <string>
 #include <time.h>
@@ -91,12 +92,12 @@ void Game::openWindow()
 	bgmBuffer.loadFromFile("resources/gameBGM.ogg");
 	sf::Sound bgm(bgmBuffer);
 
-    //setting  music
+    //setting win & fail music
 	winBuffer.loadFromFile("resources/win.ogg");
 	sf::Sound win(winBuffer);
 	loseBuffer.loadFromFile("resources/lose.ogg");
 	sf::Sound lose(loseBuffer);
-	crashBuffer.loadFromFile("resources/crash.ogg");
+    crashBuffer.loadFromFile("resources/crash.ogg");
 	sf::Sound crash(crashBuffer);
 
     // mouse position
@@ -218,7 +219,7 @@ void Game::openWindow()
                         std::string newRecord = "Wow!!! New High Score!!!";
                         text2.setString(newRecord);
                         text2.setFont(font);
-                        text2.setCharacterSize(100); // exprimee en pixels, pas en points !
+                        text2.setCharacterSize(100); // exprimée en pixels, pas en points !
                         text2.setFillColor(sf::Color::Black);
                         text2.setPosition(sf::Vector2f(200,600));
                         this->c = 3;
@@ -248,13 +249,14 @@ void Game::openWindow()
                 bgm.stop();
                 win.play();
                 sf::Time elapsed = timer.getElapsedTime();
-                float sss = static_cast<float>(static_cast<int>(elapsed.asSeconds() * 100)) / 100;
-                std::cout << sss << std::endl;
-                std::string winStr = "You won!!! You did it in " + std::to_string(sss - c) + " seconds!!!";
+                int sss = elapsed.asSeconds() * 100;
+                int sc1 = sss / 100;
+                int sc2 = sss - sc1*100;
+                std::string winStr = "You won!!! You did it in " + std::to_string(sc1 - c) + "." + std::to_string(sc2) + " seconds!!!";
                 std::cout << winStr << std::endl;
                 text.setString(winStr);
                 text.setFont(font);
-                text.setCharacterSize(100); // exprimee en pixels, pas en points !
+                text.setCharacterSize(100); // exprimée en pixels, pas en points !
                 text.setFillColor(sf::Color::Black);
                 text.setPosition(sf::Vector2f(200,400));
                 player.arrive = true;
@@ -295,6 +297,7 @@ void Game::openWindow()
             hit = allObstacle[i].collision(player);
             if(hit)
             {
+                crash.play();
                 allObstacle.erase(allObstacle.begin()+i);
             }
         }
@@ -305,8 +308,7 @@ void Game::openWindow()
         {
             //first bakgound , second bike , third dove or others ! display~
             //background drawing
-            crash.play();
-			window.clear();
+            window.clear();
             if(!player.alive)
                 bike.speedControl = 0;
             float speedControler = bike.bikeSpeed() ;
@@ -330,6 +332,7 @@ void Game::openWindow()
             // player flashing if collide
             for(int i = 1; i < 20; i++)
             {
+                // crash.play();
                 (i/3) % 2 == 0 ? player.hit = true : player.hit = false;
                 //first bakgound , second bike , third dove or others ! display~
                 //background drawing
