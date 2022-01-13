@@ -7,7 +7,7 @@ public:
     float moveSpeed;
     sf::Vector2f velocity;
     sf::RectangleShape rectangle;
-    bool hit, alive;
+    bool hit, alive, arrive;
     friend class Game;
     Player();
     void checkPosition();
@@ -18,6 +18,7 @@ Player::Player():moveSpeed(1.f)
     life = 3;
     hit = false;
     alive = true;
+    arrive = false;
     std::string fileName = "resources/Newbike4.png";
     t2.loadFromFile(fileName, sf::IntRect(30,370,450,740));
     s2.setTexture(t2);
