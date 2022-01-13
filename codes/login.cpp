@@ -123,7 +123,7 @@ void Login::openWindow()
                     }
                 }
             }
-            else if(isSpriteHover(s_thief.getGlobalBounds(), sf::Vector2f(event.mouseButton.x, event.mouseButton.y)) == true)
+            else if(isSpriteHover(s3.getGlobalBounds(), sf::Vector2f(event.mouseButton.x, event.mouseButton.y)) == true)
             {
                 if(event.type == sf::Event::MouseButtonReleased &&  event.mouseButton.button == sf::Mouse::Left)
                 {
@@ -136,7 +136,7 @@ void Login::openWindow()
                         window.close();
                         Game game;
                         if(!game.window.isOpen())
-                        Login login;
+                            Login login;
                     }
                 }
             }
@@ -148,6 +148,7 @@ void Login::openWindow()
                     bgm.stop();
                     Ranking rank;
                 }
+                bgm.play();
             }
             if(isSpriteHover(s4.getGlobalBounds(), sf::Vector2f(event.mouseButton.x, event.mouseButton.y)) == true)
             {
@@ -157,6 +158,7 @@ void Login::openWindow()
                     bgm.stop();
                     Instruct instruct;
                 }
+                bgm.play();
             }
             
         }
@@ -226,7 +228,7 @@ void Login::start()
             {
                 ridingAnimateControl = 19 ;
             }
-            std::cout << "control: "<<thiefAnimateControl  << ","<< ridingAnimateControl << std::endl ;
+            // std::cout << "control: "<<thiefAnimateControl  << ","<< ridingAnimateControl << std::endl ;
             switchToAnimate2 = true ;
         }
         window.display();
