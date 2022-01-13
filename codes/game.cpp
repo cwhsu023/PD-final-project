@@ -28,7 +28,7 @@ public:
     sf::Texture t1, gOverT, t_heart1, t_heart2, t_heart3, t_libraryFront;
     sf::Sprite s1, gOverS, s_heart1, s_heart2, s_heart3, s_libraryFront;
     sf::Font font;
-    sf::Text text;
+    sf::Text text, text2;
     sf::RectangleShape r1, r2;
     sf::Vector2f mp;
     sf::SoundBuffer bgmBuffer, winBuffer, loseBuffer;
@@ -87,19 +87,17 @@ void Game::heart(int playerLife)
 }
 void Game::openWindow()
 {
-	//playing BGM
+    //playing BGM
 	bgmBuffer.loadFromFile("resources/gameBGM.ogg");
 	sf::Sound bgm(bgmBuffer);
-	bgm.play();
-	bgm.setLoop(true);
-	
-	//setting win & fail music
-	bgmBuffer.loadFromFile("resources/win.ogg");
+
+    //setting win & fail music
+	winBuffer.loadFromFile("resources/win.ogg");
 	sf::Sound win(winBuffer);
-	bgmBuffer.loadFromFile("resources/lose.ogg");
+	loseBuffer.loadFromFile("resources/lose.ogg");
 	sf::Sound lose(loseBuffer);
-	
-	// mouse position
+
+    // mouse position
     mp.x = sf::Mouse::getPosition(this->window).x;
     mp.y = sf::Mouse::getPosition(this->window).y;
 
@@ -120,6 +118,10 @@ void Game::openWindow()
     // srand(time(NULL));
     srand(time(NULL));
     getRandomDove getRandomDove;
+
+    // play music
+    bgm.play();
+	bgm.setLoop(true);
 
     // text setting
     font.loadFromFile("resources/gen.ttf");
@@ -169,7 +171,6 @@ void Game::openWindow()
                     if(event.type == sf::Event::MouseButtonReleased &&  event.mouseButton.button == sf::Mouse::Left)
                     {
                         allObstacle.erase(allObstacle.begin(), allObstacle.begin()+allObstacle.size());
-                        bgm.stop();
                         window.close();
                         Game game;
                     }
@@ -210,6 +211,16 @@ void Game::openWindow()
                         player.velocity.y = 70;
                         break;
                     }
+                    case sf::Keyboard::LShift:
+                    {
+                        std::string newRecord = "Wow!!! New High Score!!!";
+                        text2.setString(newRecord);
+                        text2.setFont(font);
+                        text2.setCharacterSize(100); // exprimée en pixels, pas en points !
+                        text2.setFillColor(sf::Color::Black);
+                        text2.setPosition(sf::Vector2f(200,600));
+                        this->c = 3;
+                    }
                     default:
                         break;
                 }
@@ -226,7 +237,24 @@ void Game::openWindow()
         }
         if(offset > totalDist + 0.4)
         {
+            // winning
+
             window.clear();
+            // scoring
+            if(!player.arrive)
+            {
+                bgm.stop();
+                win.play();
+                sf::Time elapsed = timer.getElapsedTime();
+                std::string winStr = "You won!!! You did it in " + std::to_string(elapsed.asSeconds() - c) + " seconds!!!";
+                std::cout << winStr << std::endl;
+                text.setString(winStr);
+                text.setFont(font);
+                text.setCharacterSize(100); // exprimée en pixels, pas en points !
+                text.setFillColor(sf::Color::Black);
+                text.setPosition(sf::Vector2f(200,400));
+                player.arrive = true;
+            }
             // inLibrary = true;
             float speedControler = bike.bikeSpeed() ;
             float currentSpeed = clock.restart().asSeconds() * speedControler;
@@ -239,6 +267,7 @@ void Game::openWindow()
             player.velocity.x = 10.0f;
             player.velocity.y = 0.0f;
             player.s_victory.move(player.velocity);
+            // text.move(player.velocity);
             // if((offset - totalDist) * this->s1.getGlobalBounds().width > 2000)
             //     std::cout << "yep "<< std::endl ;
             // std::cout << s1.getGlobalBounds().left << std::endl;
@@ -252,6 +281,7 @@ void Game::openWindow()
                 victoryAnimateControl = 15 ;
             }
             window.display();
+            
             continue ;
         }
         for(int i = 0; i < allObstacle.size(); i++)
@@ -321,8 +351,9 @@ void Game::openWindow()
         if(player.life <= 0 && player.alive)
         {
             // gameover setting
-            sf::Time elapsed = timer.getElapsedTime();
+            bgm.stop();
             lose.play();
+            sf::Time elapsed = timer.getElapsedTime();
             gOverT.loadFromFile("resources/gameover.png");
             gOverS.setTexture(gOverT);
             gOverS.setPosition(sf::Vector2f(1150, 400));
@@ -340,12 +371,6 @@ void Game::openWindow()
             std::cout << "Game over. You've survived for " << elapsed.asSeconds() << " seconds" << std::endl;
             allObstacle.erase(allObstacle.begin(), allObstacle.begin()+allObstacle.size());
             player.alive = false;
-
-            text.setString(std::to_string(elapsed.asSeconds()));
-            text.setFont(font);
-            text.setCharacterSize(20); // exprimée en pixels, pas en points !
-            text.setFillColor(sf::Color::Black);
-            text.setPosition(330 , 400);
 
             float score = elapsed.asSeconds();
             std::ifstream inFile("resources/output.txt");
@@ -389,7 +414,6 @@ void Game::refresh(Player &player, int bikeAnimateControl, float currentSpeed)
     if(!player.alive)
     {
         this->window.draw(gOverS);
-        this->window.draw(text);
         this->window.draw(r1);
         this->window.draw(r2);
     }
@@ -432,11 +456,12 @@ void Game::refresh(Player &player, int bikeAnimateControl, float currentSpeed)
 void Game::victory(Player &player , int victoryAnimateControl)
 {
     //bike victory animate
-    win.play();
-    std::cout <<"victory" << std::endl ;
+    // std::cout <<"victory" << std::endl ;
     std::string fileName3 = "resources/NewYahoo" + std::to_string(victoryAnimateControl/4) + ".png";
     player.t_victory.loadFromFile(fileName3, sf::IntRect(600,300,450,740)); //, sf::IntRect(30,370,450,740)
     player.s_victory.setTexture(player.t_victory);
     this -> window.draw(player.s_victory);
-
+    
+    this->window.draw(text);
+    this->window.draw(text2);
 }
